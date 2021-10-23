@@ -32,25 +32,25 @@ function Events() {
 					<Input type="email" placeholder="example@gmail.com" onChange={event => setEmail(event.currentTarget.value)} />
 				</InputGroup>
 			</FormControl>
-			<FormControl id="address" isRequired>
+			<FormControl my={5} id="address" isRequired>
 				<FormLabel>
 					Address
 				</FormLabel>
 				<Input placeholder="777 Torybrook Lane" onChange={event => setAddress(event.currentTarget.value)} />
 			</FormControl>
-			<FormControl id="zip" isRequired>
+			<FormControl my={5} id="zip" isRequired>
 				<FormLabel>
 					Zip
 				</FormLabel>
 				<Input onChange={event => setZip(event.currentTarget.value)} />
 			</FormControl>
-			<FormControl id="date" isRequired>
+			<FormControl my={5} id="date" isRequired>
 				<FormLabel>
 					Event Date and Time
 				</FormLabel>
 				<Input type="datetime-local"></Input>
 			</FormControl>
-			<FormControl id="ev-desc">
+			<FormControl id="ev-desc" my={5}>
 				<FormLabel>Event Description</FormLabel>
 				<Textarea onChange={event => setDesc(event.currentTarget.value)} />
 			</FormControl>
