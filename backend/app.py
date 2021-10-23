@@ -18,7 +18,9 @@ class Events(db.Model):
     pid = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     address  = db.Column(db.String(255), nullable=False)
+    zip = db.Column(db.Integer, nullable = False)
     description = db.Column(db.Text(), nullable = True)
+    dates = db.Column(db.Date(), nullable = False)
 
 
 
@@ -38,7 +40,7 @@ if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
     # CODE to fill DB
     app.run()
-        '''
+    '''
         with open("data/covid.csv") as f:
             headers = next(f)
             for i in f:
