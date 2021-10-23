@@ -7,7 +7,7 @@ import './Map.css'
 function Map() {
   return (
     <div className="Map">
-      <MapChart style={{height: '100%'}}/>
+      <MapChart />
     </div>
   );
 }

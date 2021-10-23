@@ -30,7 +30,6 @@ const MapChart = () => {
   }, []);
 
   return (
-    <>
       <ComposableMap projection="geoAlbersUsa" style={{height: '100%'}}>
         <Geographies geography={geoUrl}>
           {({ geographies }) =>
@@ -47,7 +46,6 @@ const MapChart = () => {
           }
         </Geographies>
       </ComposableMap>
-    </>
   );
 };
 
