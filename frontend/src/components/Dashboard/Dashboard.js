@@ -11,7 +11,7 @@ import './Dashboard.css';
 
 function Dashboard() {
   return (
-    <Box className="Dashboard">
+    <div className="Dashboard">
       <Navigation>
         <Switch>
           <Route exact path='/dashboard'>
@@ -22,7 +22,7 @@ function Dashboard() {
           </Route>
         </Switch>
       </Navigation>
-    </Box>
+    </div>
   )
 }
 
