@@ -102,7 +102,7 @@ function Navigation({children}) {
         ) : null}
       </Box>
 
-      <Box p={4} style={{height: '100%', display: 'flex'}}>
+      <Box p={4} style={{height: '100%', width: '100%', display: 'flex', justifyContent: 'center'}}>
         {children}
       </Box>
     </>
