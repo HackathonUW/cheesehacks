@@ -55,7 +55,7 @@ function Events() {
 				<Textarea onChange={event => setDesc(event.currentTarget.value)} />
 			</FormControl>
 			</Box>
-			<Button width={500} ml={500} mt={4} type="submit" onClick={createEvent}>
+			<Button width={500} ml={500} mb={5} mt={4} type="submit" onClick={createEvent}>
 				Submit
 			</Button>
 		</div>
