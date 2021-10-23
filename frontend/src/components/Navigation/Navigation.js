@@ -24,7 +24,8 @@ import NavigationLink from './NavigationLink';
 
 const Links = [
   {name: 'Map', route: '/dashboard/'},
-  {name: 'Calendar', route: '/dashboard/calendar'}
+  {name: 'Calendar', route: '/dashboard/calendar'},
+  {name: 'Create Event', route: '/dashboard/volunteerevents'}
 ];
 
 
