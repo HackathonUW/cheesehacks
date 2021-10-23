@@ -24,7 +24,8 @@ import NavigationLink from './NavigationLink';
 
 const Links = [
   {name: 'Map', route: '/dashboard/'},
-  {name: 'Calendar', route: '/dashboard/calendar'}
+  {name: 'Calendar', route: '/dashboard/calendar'},
+  {name: 'Create Event', route: '/dashboard/volunteerevents'}
 ];
 
 
@@ -101,7 +102,7 @@ function Navigation({children}) {
         ) : null}
       </Box>
 
-      <Box p={4} style={{height: '100%', display: 'flex'}}>
+      <Box p={4} style={{height: '100%', width: '100%', display: 'flex', justifyContent: 'center'}}>
         {children}
       </Box>
     </>

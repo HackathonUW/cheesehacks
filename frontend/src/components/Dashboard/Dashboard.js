@@ -6,6 +6,7 @@ import Navigation from '../Navigation/Navigation';
 
 import Calendar from '../Calendar/Calendar';
 import Map from '../Map/Map';
+import Events from "../VolunteerEvents/VolunteerEvents";
 
 import './Dashboard.css';
 
@@ -19,6 +20,9 @@ function Dashboard() {
             </Route>
           <Route path={'/dashboard/calendar'}>
             <Calendar />
+          </Route>
+          <Route path={'/dashboard/volunteerevents'}>
+            <Events />
           </Route>
         </Switch>
       </Navigation>
