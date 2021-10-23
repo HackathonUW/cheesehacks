@@ -65,10 +65,6 @@ function Navigation({children}) {
                 transition="all 0.3s"
                 _focus={{ boxShadow: 'none' }}>
                 <HStack>
-                  <Avatar
-                    size={'sm'}
-                    src={user.picture}
-                  />
                   <VStack
                     display={{ base: 'none', md: 'flex' }}
                     alignItems="flex-start"
@@ -76,6 +72,10 @@ function Navigation({children}) {
                     ml="2">
                     <Text fontSize="sm">{user.name}</Text>
                   </VStack>
+                  <Avatar
+                    size={'sm'}
+                    src={user.picture}
+                  />
                   <Box display={{ base: 'none', md: 'flex' }}>
                     <FiChevronDown />
                   </Box>
