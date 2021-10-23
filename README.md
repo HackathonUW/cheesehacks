@@ -6,6 +6,7 @@
 - [React](https://reactjs.org/) (Frontend)
 - [Flask](https://flask.palletsprojects.com/en/2.0.x/) (Backend)
 - [Heroku](https://www.heroku.com/) (Hosting)
+- [Auth0](https://auth0.com/) (Loging and User Management)
 - Blood, sweat, and tears
 
 ### React primary dependencies:
