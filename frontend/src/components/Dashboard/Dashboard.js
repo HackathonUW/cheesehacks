@@ -1,20 +1,26 @@
 import React from 'react';
+import { Box } from '@chakra-ui/react';
 import { Switch, Route } from 'react-router-dom';
 
 import Navigation from '../Navigation/Navigation';
+import Calendar from '../Calendar/Calendar';
+
+import './Dashboard.css';
 
 function Dashboard() {
   return (
-    <Navigation>
-      <Switch>
-        <Route exact path='/dashboard'>
-          <div>Map</div>
+    <Box className="Dashboard">
+      <Navigation>
+        <Switch>
+          <Route exact path='/dashboard'>
+            <div>Map</div>
+            </Route>
+          <Route path={'/dashboard/calendar'}>
+            <Calendar />
           </Route>
-        <Route path={'/dashboard/Calendar'}>
-          <div>Calendar</div>
-        </Route>
-      </Switch>
-    </Navigation>
+        </Switch>
+      </Navigation>
+    </Box>
   )
 }
 
