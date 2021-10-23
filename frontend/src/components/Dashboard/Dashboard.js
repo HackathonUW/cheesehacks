@@ -5,8 +5,8 @@ import { Switch, Route } from 'react-router-dom';
 import Navigation from '../Navigation/Navigation';
 
 import Calendar from '../Calendar/Calendar';
-import Events from "../VolunteerEvents/VolunteerEvents";
 import Map from '../Map/Map';
+import Events from "../VolunteerEvents/VolunteerEvents";
 
 import './Dashboard.css';
 
