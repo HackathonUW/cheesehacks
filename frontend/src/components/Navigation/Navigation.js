@@ -20,6 +20,8 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { FiChevronDown } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 
+import logo from '../../images/logo.png';
+
 import NavigationLink from './NavigationLink';
 
 import './Navigation.css';
@@ -46,7 +48,23 @@ function Navigation({children}) {
             onClick={isOpen ? onClose : onOpen}
           />
           <HStack spacing={8} alignItems={'center'}>
-            <Box>Logo</Box>
+            <HStack>
+            <img
+                src={logo}
+                width='35'
+                height='35'
+                className="d-inline-block align-top"
+                alt='aeris'
+            />
+            <VStack
+              display={{ base: 'none', md: 'flex' }}
+              alignItems="flex-start"
+              spacing="1px"
+              ml="2">
+              <Text fontSize="lg">AΞЯIS</Text>
+            </VStack>
+            </HStack>
+
             <HStack
               as={'nav'}
               spacing={4}
