@@ -25,19 +25,20 @@ class Events(db.Model):
 
 @app.route('/events')
 def events():
-
+    pass
 
 @app.route('/')
 def index():
     return "<h1>Welcome to our server !!</h1>"
-@app.route('/wicovid')
+@app.route('/wicovid', methods=['POST'])
 def wicovid():
-    return jsonify(wi_covid.query.all().as_dict())
+    return jsonify( [i.as_dict() for i in wi_covid.query.all()])
 
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
     # CODE to fill DB
-    with engine.connect() as con: 
+    app.run()
+        '''
         with open("data/covid.csv") as f:
             headers = next(f)
             for i in f:
@@ -50,7 +51,8 @@ if __name__ == '__main__':
                     con.execute("ALTER TABLE wi_covid ADD " + i[1]  + " FLOAT;")
                     con.execute("UPDATE wi_covid SET " + i[1] + "=" + i[-1].rstrip())                    
                 else:
-                    con.execute("UPDATE wi_covid SET " + i[1] + "=" + i[-1].rstrip())                    
+                    con.execute("UPDATE wi_covid SET " + i[1] + "=" + i[-1].rstrip())
+            '''     
                 
 
                 
