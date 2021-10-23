@@ -38,7 +38,14 @@ function Login() {
           fontSize={{ base: '2xl', sm: '4xl', md: '6xl'}}
           lineHeight={'110%'}
         >
-        See pollution statistics, sign up for stuff idk
+        Aeris
+        </Heading>
+        <Heading
+          fontWeight={400}
+          fontSize={{base: '2xl', sm: '4xl', md: '6xl'}}
+          lineHeight={'110%'}
+        >
+        Pollution Tracker
         </Heading>
         </Stack>
         <Stack

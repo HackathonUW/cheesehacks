@@ -4,6 +4,7 @@ import { Switch, Route } from 'react-router-dom';
 
 import Navigation from '../Navigation/Navigation';
 import Calendar from '../Calendar/Calendar';
+import Events from "../VolunteerEvents/VolunteerEvents";
 
 import './Dashboard.css';
 
@@ -17,6 +18,9 @@ function Dashboard() {
             </Route>
           <Route path={'/dashboard/calendar'}>
             <Calendar />
+          </Route>
+          <Route path={'/dashboard/volunteerevents'}>
+            <Events />
           </Route>
         </Switch>
       </Navigation>
