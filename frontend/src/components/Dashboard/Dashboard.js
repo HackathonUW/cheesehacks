@@ -3,7 +3,9 @@ import { Box } from '@chakra-ui/react';
 import { Switch, Route } from 'react-router-dom';
 
 import Navigation from '../Navigation/Navigation';
+
 import Calendar from '../Calendar/Calendar';
+import Map from '../Map/Map';
 
 import './Dashboard.css';
 
@@ -13,7 +15,7 @@ function Dashboard() {
       <Navigation>
         <Switch>
           <Route exact path='/dashboard'>
-            <div>Map</div>
+            <Map />
             </Route>
           <Route path={'/dashboard/calendar'}>
             <Calendar />
