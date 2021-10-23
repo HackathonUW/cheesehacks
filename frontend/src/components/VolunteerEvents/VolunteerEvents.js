@@ -20,21 +20,13 @@ function Events() {
 			<Box my={4} textAlign="left" width={500} ml={500}>
 			<FormControl my={5} id="org-name" isRequired>
 				<FormLabel>
-					Organization Name
+					Event Name
 				</FormLabel>
 				<Input onChange={event => setName(event.currentTarget.value)} />
 			</FormControl>
-			<FormControl my={5} id="org-email" isRequired>
-				<FormLabel>
-					Email
-				</FormLabel>
-				<InputGroup>
-					<Input type="email" placeholder="example@gmail.com" onChange={event => setEmail(event.currentTarget.value)} />
-				</InputGroup>
-			</FormControl>
 			<FormControl my={5} id="address" isRequired>
 				<FormLabel>
-					Address
+					Event Location
 				</FormLabel>
 				<Input placeholder="777 Torybrook Lane" onChange={event => setAddress(event.currentTarget.value)} />
 			</FormControl>
@@ -55,7 +47,7 @@ function Events() {
 				<Textarea onChange={event => setDesc(event.currentTarget.value)} />
 			</FormControl>
 			</Box>
-			<Button width={500} ml={500} mb={5} mt={4} type="submit" onClick={createEvent}>
+			<Button width={500} ml={500} mb={5} type="submit" onClick={createEvent}>
 				Submit
 			</Button>
 		</div>
