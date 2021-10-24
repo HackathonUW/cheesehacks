@@ -45,7 +45,7 @@ const colorScale4 = scaleQuantize()
     .range(['#bbbbbb', '#b6b3ad', '#b2aca0', '#ada592', '#a79d85', '#a29678', '#9d8f6b', '#97885e', '#918151']);
 
 
-const MapChart = ({topic}) => {
+const MapChart = ({topic, setMin, setMax}) => {
   const [mapData, setMapData] = useState([]);
   const [eventData, setEventData] = useState([]);
 
@@ -70,6 +70,9 @@ const MapChart = ({topic}) => {
     }
     var min = Math.min.apply(0, values),
         max = Math.max.apply(100, values);
+
+    setMin(min);
+    setMax(max);
 
     colorScale.domain([min, max])
     colorScale2.domain([min, max])

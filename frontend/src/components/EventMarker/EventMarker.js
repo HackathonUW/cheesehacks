@@ -6,7 +6,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { AiOutlineCalendar, AiFillCalendar } from 'react-icons/ai'
-import { MdDescription } from 'react-icons/md';
+import { BsFillPeopleFill } from 'react-icons/bs';
 import './EventMarker.js';
 
 function EventMarker({event}) {
@@ -15,9 +15,11 @@ function EventMarker({event}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [attending, setAttending] = useState();
   const [fetching, setFetching] = useState();
+  const [participants, setParticipants] = useState(0);
 
   useEffect(() => {
     getAttendance();
+    getParticipants();
   }, [isOpen])
 
   function getAttendance() {
@@ -92,6 +94,52 @@ function EventMarker({event}) {
       });
   }
 
+  function getParticipants() {
+    const options = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+        action: "ids",
+        id: [event.pid]
+      })
+		};
+
+    fetch("https://cheesehack-backend.herokuapp.com/events", options)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        console.log(data[0].num_attend);
+        setParticipants(data[0].num_attend);
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }
+
+  function incrementParticipants() {
+    const options = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+        action: "increment",
+        pid: event.pid
+      })
+		};
+
+    fetch("https://cheesehack-backend.herokuapp.com/events", options)
+      .then(response => response.json())
+      .then(res => {
+        console.log(!res.error);
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }
+
   function handleJoinEvent() {
     const options = {
 			method: 'POST',
@@ -128,6 +176,8 @@ function EventMarker({event}) {
           }) 
         }
         setAttending(true);
+        incrementParticipants();
+        setParticipants(participants + 1);
       })
       .catch(err => {
         console.error(err);
@@ -167,11 +217,17 @@ function EventMarker({event}) {
               <div> {new Date(event.endDate).toLocaleString()} </div>
             </Box>
             <br/>
-            <Box display={'flex'}>
-              Creator: &nbsp;
-              <Link href={event.email}>
-                {event.email ?? "example@gmail.com"}
-              </Link>
+            <Box display={'flex'} justifyContent={'space-between'}>
+              <Box display={'flex'}>
+                Creator: &nbsp;
+                <Link href={event.email}>
+                  {event.email ?? "example@gmail.com"}
+                </Link>
+              </Box>
+              <Box display={'flex'} alignItems={'center'}>
+                <BsFillPeopleFill/> &nbsp;
+                {participants}
+              </Box>
             </Box>
           </ModalBody>
 
