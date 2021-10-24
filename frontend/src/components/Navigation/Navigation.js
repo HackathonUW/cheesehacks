@@ -1,6 +1,7 @@
 import {
   Box,
   Text,
+  Button,
   Flex,
   Avatar,
   HStack,
@@ -12,10 +13,11 @@ import {
   MenuItem,
   MenuDivider,
   useDisclosure,
+  useColorMode,
   useColorModeValue,
   Stack,
 } from '@chakra-ui/react';
-import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
+import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { useAuth0 } from '@auth0/auth0-react';
 import { FiChevronDown } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
@@ -32,6 +34,7 @@ const Links = [
 ];
 
 function Navigation({children}) {
+  const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { logout, user } = useAuth0();
 
@@ -74,6 +77,9 @@ function Navigation({children}) {
             </HStack>
           </HStack>
           <Flex alignItems={'center'}>
+            <Button onClick={toggleColorMode}>
+              {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+            </Button>
             <Menu>
               <MenuButton
                 py={2}

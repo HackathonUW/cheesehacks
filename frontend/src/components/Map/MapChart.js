@@ -38,21 +38,43 @@ const colorScale2 = scaleQuantize()
   '#993333'
 ]);
 
+const colorScale3 = scaleQuantize()
+    .range([['#eeeeee', '#ebe7e1', '#e8dfd5', '#e5d8c9', '#e1d1bc', '#dec9b0', '#dac2a4', '#d6bb98', '#d2b48c']]);
+
+const colorScale4 = scaleQuantize()
+    .range(['#bbbbbb', '#b6b3ad', '#b2aca0', '#ada592', '#a79d85', '#a29678', '#9d8f6b', '#97885e', '#918151']);
+
 
 const MapChart = ({topic}) => {
   const [mapData, setMapData] = useState([]);
   const [eventData, setEventData] = useState([]);
 
   useEffect(() => {
+    console.log("REFETCH");
     fetchMapData();
-  }, []);
+  }, [topic]);
 
   useEffect(() => {
-    var values = mapData.map(data => data.Cases_per_100);
+    console.log("RESCALE");
+    var values = [];
+    switch(topic) {
+      case 'covid':
+        values = mapData.map(data => data.Cases_per_100);
+        break;
+      case 'air':
+        values = mapData.map(data => data.Benzene);
+        break;
+      default:
+        values = mapData.map(data => data.Cases_per_100);
+        break;
+    }
     var min = Math.min.apply(0, values),
         max = Math.max.apply(100, values);
+
     colorScale.domain([min, max])
     colorScale2.domain([min, max])
+    colorScale3.domain([min, max])
+    colorScale4.domain([min, max])
   }, [mapData])
 
   function fetchMapData() {
@@ -64,8 +86,21 @@ const MapChart = ({topic}) => {
       body: ""
     }
 
+    var endpoint = "";
+    switch(topic) {
+      case 'covid':
+        endpoint = 'wicovid';
+        break;
+      case 'air':
+        endpoint = 'airpol';
+        break;
+      default:
+        endpoint = 'wicovid';
+        break;
+    }
+
     setMapData([]);
-    fetch("https://cheesehack-backend.herokuapp.com/wicovid", options)
+    fetch('https://cheesehack-backend.herokuapp.com/' + endpoint, options)
       .then(response => response.json())
       .then(data => {
         setMapData(data);
@@ -100,6 +135,7 @@ const MapChart = ({topic}) => {
           // event.endDate = moment(event.dates.split(',')[1], 'YYYY-MM-DD HH:mm:ss').toDate();
         });
         setEventData(data);
+        console.log("FINISH REFETCH");
       })
       .catch(error => {
         console.error(error);
@@ -120,22 +156,42 @@ const MapChart = ({topic}) => {
         <ZoomableGroup 
             center={[-89.84427405362867, 44.68479592051389]}
             maxZoom={1}>
-          <Geographies geography={geoUrl} disableOptimisation>
-            {({ geographies }) =>
+          <Geographies geography={geoUrl} disableOptimisation={true}>
+            {({ geographies }) => 
               geographies.map(geo => {
                 const cur = mapData.find(s => s.county === geo.properties.NAME);
+                var fill = 0;
+                var darkerFill = 0;
+                if (cur) {
+                  switch(topic) {
+                    case 'covid':
+                      fill = colorScale(cur.Cases_per_100);
+                      darkerFill = colorScale2(cur.Cases_per_100);
+                      break;
+                    case 'air':
+                      fill = colorScale3(cur.Benzene);
+                      darkerFill = colorScale4(cur.Benzene);
+                      break;
+                    default:
+                      fill = colorScale(cur.Cases_per_100);
+                      darkerFill = colorScale2(cur.Cases_per_100);
+                      break;
+                  }
+                }
+
+
                 return (
                   <Geography
-                    key={geo.rsmKey}
+                    key={geo.rsmKey + topic}
                     geography={geo}
                     style={{
                       default: {
-                        fill: cur ? colorScale(cur.Cases_per_100) : '#eeeeee',
+                        fill: cur ? fill : '#eeeeee',
                         outline: "none",
                         stroke: '#dddddd',
                       },
                       hover: {
-                        fill: cur ? colorScale2(cur.Cases_per_100) : '#eeeeee',
+                        fill: cur ? darkerFill : '#eeeeee',
                         outline: "none"
                       },
                       pressed: {

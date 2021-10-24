@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, Button, Select } from '@chakra-ui/react';
+import { Box, Button, Select, Tooltip } from '@chakra-ui/react';
 import ReactTooltip from "react-tooltip";
 import { useHistory } from 'react-router-dom';
 import addEvent from '../../images/addEvent.png'
@@ -69,11 +69,20 @@ function Map() {
       </Select>
       <MapChart topic={topic}/>
       {!fetching && type == 'user' ? 
-      <circle r="10vh" className=" addEvent addEventCircle" onClick={addEvent} data-tip="Create Event" data-for="registerTip">
-        <div className="addIcon">
-          <AddIcon />
-        </div>
-      </circle>
+      <Tooltip 
+          label="Add Event" 
+          bg="white" 
+          placement="top"
+          color="gray.800"
+          fontSize='1.2em'
+      >
+        <circle r="10vh" className=" addEvent addEventCircle" onClick={addEvent} data-tip="Create Event" data-for="registerTip">
+          <div className="addIcon">
+            <AddIcon />
+          </div>
+        </circle>
+      </Tooltip>
+
       : null }
       <ReactTooltip id="registerTip" place="top" effect="solid"/>
     </div>

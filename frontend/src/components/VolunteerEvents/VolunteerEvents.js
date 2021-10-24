@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { FormControl, FormLabel, Box, Heading, Button, Input, Textarea, InputGroup, useToast } from "@chakra-ui/react";
+import { Select, FormControl, FormLabel, Box, Heading, Button, Input, Textarea, InputGroup, useToast } from "@chakra-ui/react";
 import events from "../Calendar/events";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -14,6 +14,7 @@ function Events() {
 	const [dateTime, setDateTime] = useState();
 	const [fdateTime, setFDateTime] = useState();
 	const { user } = useAuth0();
+  const [topic, setTopic] = useState("covid");
 
   const [length, setLength] = useState();
 
@@ -45,7 +46,7 @@ function Events() {
       })
   }
 
-  function postEvent() {
+  function postEvent(toast) {
     var info = {
 			action: "add",
 			id: length + 1,
@@ -55,6 +56,7 @@ function Events() {
 			address: address,
 			zip_code: zip,
 			dates: {dateTime, fdateTime},
+      topic: topic,
 		};
 
 		const options = {
@@ -69,6 +71,7 @@ function Events() {
 		fetch("https://cheesehack-backend.herokuapp.com/events", options)
       .then(response => response.json())
       .then(res => {
+        console.log("SUCCESS:", !res.error)
         if (!res.error) {
           toast({
             title: "Created Event!",
@@ -120,6 +123,16 @@ function Events() {
 				</FormLabel>
 				<Input onChange={event => setAddress(event.currentTarget.value)} />
 			</FormControl>
+      <FormControl my={5} id="topic" isRequired>
+      	<FormLabel>
+					Topic
+        </FormLabel>
+        <Select value={topic}  my={5} onChange={(e) => {setTopic(e.target.value)}}>
+          <option value="covid">COVID-19</option>
+          <option value="air">Air Pollution</option>
+        </Select>
+      </FormControl>
+
 			<FormControl my={5} id="zip" isRequired>
 				<FormLabel>
 					Zip
