@@ -68,7 +68,11 @@ function Profile() {
       .then(response => response.json())
       .then(res => {
         if (!res.error) {
-          setEvents(events.filter(e => {
+          var eventsTemp = Array.from(new Set(events.map(e => e.pid)))
+          .map(pid => {
+            return events.find(e => e.pid === pid)
+          })
+          setEvents(eventsTemp.filter(e => {
             return e.pid !== event.pid;
           }));
         }
