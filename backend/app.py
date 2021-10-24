@@ -9,7 +9,6 @@ from sqlalchemy.types import UserDefinedType
 from datetime import datetime
 from flask_cors import CORS
 
-
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
@@ -61,6 +60,11 @@ class Events(db.Model):
     evname = db.Column(db.String(255),nullable=False)
     def as_dict(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+class Attended(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    pid = db.Column(db.Integer, db.ForeignKey('events.pid'))
+    email = db.Column(db.String(255), db.ForeignKey('users.email'))
+
 
 @app.route('/users', methods=['POST'])
 def users():
@@ -80,6 +84,11 @@ def users():
             i["type"] = i["type"].name
             lists.append(i)
         return jsonify(i)
+    if(request.json.get('action') == 'attended'):
+        db.session.add(Attended(pid=request.json['pid'], email=request.json['email']))
+        db.session.commit()
+    if(request.json.get('action') == 'list'):
+        return jsonify([i.as_dict() for i in db.session.query(Attended,Events).filter(Attended.email==request.json['email'],Attended.pid==Events.pid)])
 
     return jsonify({"error" : True})
 @app.route('/events', methods=['POST'])
@@ -124,7 +133,9 @@ def wicovid():
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
     # CODE to fill DB
+    db.create_all()
     app.run()
+
     '''
     with engine.connect() as con:
         with open("data/covid.csv") as f:
