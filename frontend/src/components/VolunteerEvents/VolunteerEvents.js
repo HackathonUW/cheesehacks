@@ -26,7 +26,7 @@ function Events() {
     })
   }
 
-  function getEventLength(toast) {
+  function getEventLength() {
     const options = {
 			method: 'POST',
 			headers: {

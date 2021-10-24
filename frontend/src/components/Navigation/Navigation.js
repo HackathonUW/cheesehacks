@@ -67,14 +67,10 @@ function Navigation({children}) {
             <HStack
               as={'nav'}
               spacing={4}
-              display={{ base: 'none', md: 'flex' }}>
-              {Links.map((link) => (
-                <Link to={link.route} key={link.name}>
-                  <NavigationLink>
-                    {link.name}
-                  </NavigationLink>
-                </Link>
-              ))}
+              display={{ base: 'none', md: 'flex' }}
+            >
+              <NavigationLink to='/dashboard' label='Map'/>
+              <NavigationLink to='/dashboard/calendar' label='Calendar'/>
             </HStack>
           </HStack>
           <Flex alignItems={'center'}>

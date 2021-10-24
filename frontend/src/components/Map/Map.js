@@ -15,6 +15,7 @@ import './Map.css'
 
 function Map() {
   const { user } = useAuth0();
+  const [topic, setTopic] = useState("covid");
   const [fetching, setFetching] = useState(false);
   const [type, setType] = useState("user");
 
@@ -61,12 +62,12 @@ function Map() {
 
   return (
     <div className="Map">
-      <Select placeholder="Select data to view">
-        <option value="option1">Option 1</option>
-        <option value="option2">Option 2</option>
-        <option value="option3">Option 3</option>
+      <Select value={topic} onChange={(e) => {setTopic(e.target.value)}}>
+        <option value="covid">COVID-19</option>
+        <option value="air">Air Pollution</option>
+        <option value="water">Water Pollution</option>
       </Select>
-      <MapChart />
+      <MapChart topic={topic}/>
       {!fetching && type == 'user' ? 
       <circle r="10vh" className=" addEvent addEventCircle" onClick={addEvent} data-tip="Create Event" data-for="registerTip">
         <div className="addIcon">

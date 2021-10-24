@@ -39,7 +39,7 @@ const colorScale2 = scaleQuantize()
 ]);
 
 
-const MapChart = () => {
+const MapChart = ({topic}) => {
   const [mapData, setMapData] = useState([]);
   const [eventData, setEventData] = useState([]);
 
@@ -64,6 +64,7 @@ const MapChart = () => {
       body: ""
     }
 
+    setMapData([]);
     fetch("https://cheesehack-backend.herokuapp.com/wicovid", options)
       .then(response => response.json())
       .then(data => {
@@ -83,9 +84,10 @@ const MapChart = () => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({action: "search"})
+      body: JSON.stringify({action: "search", topic: topic})
     }
 
+    setEventData([]);
     fetch("https://cheesehack-backend.herokuapp.com/events", options)
       .then(response => response.json())
       .then(data => {
