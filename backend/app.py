@@ -8,7 +8,7 @@ from sqlalchemy import func
 from sqlalchemy.types import UserDefinedType
 from datetime import datetime
 from flask_cors import CORS
-
+import requests
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -79,7 +79,7 @@ def users():
             i=i.as_dict()
             i["type"] = i["type"].name
             lists.append(i)
-        return jsonify(i)
+        return jsonify(lists)
 
     return jsonify({"error" : True})
 @app.route('/events', methods=['POST'])
