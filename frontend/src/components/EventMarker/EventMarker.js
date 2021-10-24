@@ -1,16 +1,38 @@
 import { Marker } from "react-simple-maps";
 import ReactTooltip from "react-tooltip";
 import { Box, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, useDisclosure, Link } from '@chakra-ui/react';
+import { useAuth0 } from "@auth0/auth0-react";
 
 import { FaMapMarkerAlt } from 'react-icons/fa';
 
 import './EventMarker.js';
 
 function EventMarker({event}) {
+  const { user } = useAuth0();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   function onJoinEvent() {
+    const options = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+        pid: event.pid,
+        email: user.email
+      })
+		};
+
     console.log("JOINING EVENT", event)
+    fetch("https://cheesehack-backend.herokuapp.com/users", options)
+      .then(response => response.json())
+      .then(res => {
+        console.log("JOIN EVENT", !res.error)
+      })
+      .catch(err => {
+        console.error(err);
+      });
+      
   }
 
   return (
