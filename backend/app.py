@@ -6,12 +6,18 @@ from geopy.geocoders import Nominatim
 import enum
 from sqlalchemy import func
 from sqlalchemy.types import UserDefinedType
+from datetime import datetime
+from flask_cors import CORS
+
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})
+
 connstr =  "mysql://a0njs6zhe0h01rdm:yaxdi3felgio85ta@en1ehf30yom7txe7.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/glmirxsdwg8f23ls"
 app.config['SQLALCHEMY_DATABASE_URI'] = connstr
 db = SQLAlchemy(app)
 engine = create_engine(connstr)
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]= True
 
 meta = MetaData()
 meta.bind= engine
@@ -21,6 +27,7 @@ class wi_covid(db.Model):
     __table__ = Table('wi_covid', meta, autoload = True, autoload_with=db.engine)
     def as_dict(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 class UserType(enum.Enum):
     organization=0
     user = 1
@@ -105,23 +112,38 @@ def wicovid():
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
     # CODE to fill DB
+<<<<<<< HEAD
     app.run()
+=======
+    #app.run()
+    #wi_covid.__table__.drop(bind=engine)
+    for i in Events.query.all():
+        print(i)            
+>>>>>>> 9c5889d2f25b00aaf6c0dd11cc6a4f0e835ab908
     '''
     with engine.connect() as con:
         with open("data/covid.csv") as f:
+            count = 0
             headers = next(f)
             for i in f:
                 i = i.split(",")
                 i[1] = i[1].replace(" ","_")
                 i[1] = ''.join(e for e in i[1] if e.isalnum() or e=='_')
                 print(i)
-
                 if(i[1].lower() not in [a[0].lower() for a in con.execute("DESCRIBE wi_covid")]):
-                    con.execute("ALTER TABLE wi_covid ADD " + i[1]  + " FLOAT;")
-                    con.execute("UPDATE wi_covid SET " + i[1] + "=" + i[-1].rstrip())                    
+                    con.execute("ALTER TABLE wi_covid ADD " + i[1]  + " FLOAT;")                
+                    if(con.execute("SELECT * FROM wi_covid WHERE county = " + "'"+ i[0] + "'").rowcount):
+                        pass
+                    else:
+                        con.execute("INSERT INTO wi_covid (county) VALUES(" + "'" + i[0] + "')" )
+                    con.execute("UPDATE wi_covid SET " + i[1] + "=" + i[-1].rstrip() + " WHERE county=" + "'" + i[0] + "'" )                    
                 else:
-                    con.execute("UPDATE wi_covid SET " + i[1] + "=" + i[-1].rstrip())
-            '''     
+                    if(con.execute("SELECT * FROM wi_covid WHERE county = " + "'"+ i[0] + "'").rowcount):
+                        pass
+                    else:
+                        con.execute("INSERT INTO wi_covid (county) VALUES(" + "'" + i[0] + "')" )
+                    con.execute("UPDATE wi_covid SET " + i[1] + "=" + i[-1].rstrip() + " WHERE county=" + "'" + i[0] + "'" )                    
+             '''
                 
 
                 

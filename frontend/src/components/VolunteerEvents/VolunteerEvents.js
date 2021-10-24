@@ -10,6 +10,7 @@ function Events() {
 	const [address, setAddress] = useState();
 	const [zip, setZip] = useState();
 	const { user } = useAuth0();
+	//Number of events API
 
 	const createEvent = useCallback(() => {
 

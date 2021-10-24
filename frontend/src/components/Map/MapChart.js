@@ -1,50 +1,174 @@
 import React, { useState, useEffect } from "react";
-import { ComposableMap, Geographies, Geography } from "react-simple-maps";
+import { ComposableMap, ZoomableGroup, Geographies, Geography, Marker } from "react-simple-maps";
 import { scaleQuantize } from "d3-scale";
-import { csv } from "d3-fetch";
 
-const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json";
+import blueEvent from '../../images/blueEvent.png';
+
+/**
+ * Centering on markers: https://github.com/zcreativelabs/react-simple-maps/issues/62
+ */
+const geoUrl = "https://raw.githubusercontent.com/deldersveld/topojson/master/countries/us-states/WI-55-wisconsin-counties.json";
+// const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json";
 
 const colorScale = scaleQuantize()
-  .domain([1, 10])
-  .range([
-    "#ffedea",
-    "#ffcec5",
-    "#ffad9f",
-    "#ff8a75",
-    "#ff5533",
-    "#e2492d",
-    "#be3d26",
-    "#9a311f",
-    "#782618"
-  ]);
+.range([
+  '#eeeeee', 
+  '#ecd7d4', 
+  '#e9c1bb', 
+  '#e5aba3', 
+  '#df948b', 
+  '#d77e74', 
+  '#cf675e', 
+  '#c64e48', 
+  '#bb3333'
+]);
+
+const colorScale2 = scaleQuantize()
+.range([
+  '#bbbbbb', 
+  '#baaaa9', 
+  '#b89a97', 
+  '#b58985', 
+  '#b17974', 
+  '#ac6863', 
+  '#a65752', 
+  '#a04642', 
+  '#993333'
+]);
+
 
 const MapChart = () => {
-  const [data, setData] = useState([]);
+  const [zoom, setZoom] = useState(1);
+  const [mapData, setMapData] = useState([]);
+  const [eventData, setEventData] = useState([]);
 
   useEffect(() => {
-    // https://www.bls.gov/lau/
-    csv("/unemployment-by-county-2017.csv").then(counties => {
-      setData(counties);
-    });
+    alert("Fetching data...");
+    fetchMapData();
+    fetchEventData();
   }, []);
 
+  useEffect(() => {
+    console.log("DATA" + mapData);
+    var values = mapData.map(data => data.Cases_per_100);
+    var min = Math.min.apply(0, values),
+        max = Math.max.apply(100, values);
+    colorScale.domain([min, max])
+    colorScale2.domain([min, max])
+  }, [mapData])
+
+  function fetchMapData() {
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: ""
+    }
+
+    fetch("https://cheesehack-backend.herokuapp.com/wicovid", options)
+      .then(response => response.json())
+      .then(data => {
+        setMapData(data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+
+  function fetchEventData() {
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({action: "search"})
+    }
+
+    fetch("https://cheesehack-backend.herokuapp.com/events", options)
+      .then(response => response.json())
+      .then(data => {
+        data.forEach(event => {
+          event.coordinates = event.coordinates.split('(')[1].split(')')[0].split(' ').map(Number);
+          event.coordinates = [event.coordinates[1], event.coordinates[0]];
+          
+        });
+        setEventData(data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+
   return (
-      <ComposableMap projection="geoAlbersUsa" style={{height: '100%'}}>
-        <Geographies geography={geoUrl}>
-          {({ geographies }) =>
-            geographies.map(geo => {
-              const cur = data.find(s => s.id === geo.id);
-              return (
-                <Geography
-                  key={geo.rsmKey}
-                  geography={geo}
-                  fill={colorScale(cur ? cur.unemployment_rate : "#EEE")}
-                />
-              );
-            })
-          }
-        </Geographies>
+      <ComposableMap 
+          projection="geoConicConformal" 
+          projectionConfig={{
+            rotate: [90,-45.16667, 0],
+            parallels: [46.76667,45.56667],
+            bounds: [[-0.046794,-0.044049],[0.052058,0.063177]],
+            scale: 5000
+          }}
+          style={{height: '100%'}}
+      >
+        <ZoomableGroup 
+            center={[-89.84427405362867, 44.68479592051389]} 
+            zoom={zoom}
+            maxZoom={1}>
+          <Geographies geography={geoUrl}>
+            {({ geographies }) =>
+              geographies.map(geo => {
+                const cur = mapData.find(s => s.county === geo.properties.NAME);
+                // console.log(geo.properties.NAME);
+                // console.log(cur);
+                return (
+                  <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    style={{
+                      default: {
+                        fill: colorScale(cur ? cur.Cases_per_100 : "#EEE"),
+                        outline: "none",
+                        stroke: '#dddddd',
+                      },
+                      hover: {
+                        fill: colorScale2(cur ? cur.Cases_per_100 : "#EEE"),
+                        outline: "none"
+                      },
+                      pressed: {
+                        outline: "none",
+                      }
+                    }}
+                  />
+                );
+              })
+            }
+          </Geographies>
+          <Marker coordinates={[-89.492556, 43.090266]}>
+          <g
+            fill="none"
+            stroke="#FF5533"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            transform="translate(-12, -24)"
+          >
+            <circle cx="12" cy="10" r="3" />
+            <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z" />
+          </g>
+          </Marker>
+          {eventData.map(event => {
+            console.log(event);
+            return (
+            <Marker key={event.pid} coordinates={event.coordinates}>
+              <img
+                src={blueEvent}
+                className="d-inline-block align-top"
+                alt='blue event'
+              />
+            </Marker> );
+          })}
+        </ZoomableGroup>
       </ComposableMap>
   );
 };
