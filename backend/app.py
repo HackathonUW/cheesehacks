@@ -4,14 +4,17 @@ from sqlalchemy import create_engine, MetaData, Table, Enum
 from geoalchemy2 import Geometry
 from geopy.geocoders import Nominatim
 import enum
-
+from sqlalchemy import func
+from sqlalchemy.types import UserDefinedType
 
 app = Flask(__name__)
 connstr =  "mysql://a0njs6zhe0h01rdm:yaxdi3felgio85ta@en1ehf30yom7txe7.cbetxkdyhwsb.us-east-1.rds.amazonaws.com:3306/glmirxsdwg8f23ls"
 app.config['SQLALCHEMY_DATABASE_URI'] = connstr
 db = SQLAlchemy(app)
-meta = MetaData()
 engine = create_engine(connstr)
+
+meta = MetaData()
+meta.bind= engine
 
 # A welcome message to test our server
 class wi_covid(db.Model):  
@@ -21,7 +24,15 @@ class wi_covid(db.Model):
 class UserType(enum.Enum):
     organization=0
     user = 1
+class Point(UserDefinedType):
+    def get_col_spec(self):
+        return "POINT"
 
+    def bind_expression(self, bindvalue):
+        return func.ST_GeomFromText(bindvalue, type_=self)
+
+    def column_expression(self, col):
+        return func.ST_AsText(col, type_=self)
 class Users(db.Model):
     email = db.Column(db.String(255), nullable= False, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
@@ -37,7 +48,7 @@ class Events(db.Model):
     dates = db.Column(db.DATETIME(), nullable = False)
     address  = db.Column(db.String(255), nullable=False)
     zip_code = db.Column(db.Integer, nullable = False)
-    coordinates = db.Column(Geometry('POINT'), nullable = False)
+    coordinates = db.Column(Point, nullable=False)
     num_attend = db.Column(db.Integer, nullable= False)
     def as_dict(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -64,20 +75,21 @@ def events():
             location = geolocator.geocode(request.json["address"] + " " + str(request.json["zip_code"]))
             db.session.add(Events(pid = request.json["id"],email=request.json["email"],address=request.json["address"],
             zip_code = request.json["zip_code"], description=request.json["description"], dates=request.json["dates"]
-            , coordinates = (location.latitude,location.longitude), num_attend=0))
+            , coordinates = 'POINT('+str(location.latitude) + " " + str(location.longitude) + ')', num_attend=0))
+            db.session.commit()
         except Exception as e:
             print(e)
             return jsonify({"error": True})
         return jsonify({"error" : False})
     if(request.json.get('action') == 'search'):
-        return jsonify(i.as_dict for i in Events.query.all())
+        return jsonify([i.as_dict() for i in Events.query.all()])
     if(request.json.get('action') == 'increment'):
         obj = Events.query(pid=request.json["id"]).one()
         obj.num_attend +=1
         db.session.commit()
         return jsonify({"error" : False})
     if(request.json.get('action') == "length"):
-        return jsonify({ "error" : False,"length": Events.query.all().rowcount})
+        return jsonify({ "error" : False,"length": Events.query.count()})
     return jsonify({"error": True})
 
 @app.route('/')
@@ -90,6 +102,7 @@ def wicovid():
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
     # CODE to fill DB
+    db.create_all()
     app.run()
     '''
         with open("data/covid.csv") as f:
