@@ -21,14 +21,11 @@ function Map() {
     <div className="Map">
       <MapChart />
       <ReactTooltip id="EventMarker" place="top" effect="solid"/>
-      <svg className="addEvent" >
-        <circle r="10vh" className="addEventCircle" onClick={addEvent}>
+        <circle r="10vh" className=" addEvent addEventCircle" onClick={addEvent}>
           <div className="addIcon">
             <AddIcon />
           </div>
         </circle>
-        </svg>
-
     </div>
   );
 }
