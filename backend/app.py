@@ -44,7 +44,7 @@ class Users(db.Model):
     email = db.Column(db.String(255), nullable= False, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     address  = db.Column(db.String(255), nullable=False)
-    zip_code = db.Column(db.Integer, nullable = False)
+    zip_code = db.Column(db.String(20), nullable = False)
     type = db.Column(db.Enum(UserType), nullable=False)
     def as_dict(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -55,7 +55,7 @@ class Events(db.Model):
     description = db.Column(db.Text(), nullable = True)
     dates = db.Column(db.String(255), nullable = False)
     address  = db.Column(db.String(255), nullable=False)
-    zip_code = db.Column(db.Integer, nullable = False)
+    zip_code = db.Column(db.String(20), nullable = False)
     coordinates = db.Column(Point, nullable=False)
     num_attend = db.Column(db.Integer, nullable= False)
     evname = db.Column(db.String(255),nullable=False)
@@ -66,14 +66,20 @@ class Events(db.Model):
 def users():
     if(request.json.get('action', None) == 'add'):
         try:
-            db.session.add(Users(name=request.json["name"],address=request.json["address"],
-            zip_code = request.json["zip_code"], description=request.json["description"], dates=request.json["dates"], type=UserType[request.json["type"]]))
+            db.session.add(Users(email = request.json["email"],name=request.json["name"],address=request.json["address"],
+            zip_code = request.json["zip_code"],type=UserType[request.json["type"]]))
+            db.session.commit()
         except Exception as e:
             print(e)
             return jsonify({"error": True})
         return jsonify({"error" : False})
     if(request.json.get('action') == 'search'):
-        return jsonify([i.as_dict() for i in Users.query.all()])
+        lists = []
+        for i in Users.query.all():
+            i=i.as_dict()
+            i["type"] = i["type"].name
+            lists.append(i)
+        return jsonify(i)
 
     return jsonify({"error" : True})
 @app.route('/events', methods=['POST'])
@@ -82,8 +88,9 @@ def events():
         try:
             geolocator = Nominatim(user_agent="Aeris")
             location = geolocator.geocode(request.json["address"] + " " + str(request.json["zip_code"]))
+            dates = request.json["dates"]["dateTime"] + "," + request.json["dates"]["fdateTime"]
             db.session.add(Events(pid = request.json["id"],email=request.json["email"],address=request.json["address"],
-            zip_code = request.json["zip_code"], description=request.json["description"], dates=request.json["dates"]
+            zip_code = request.json["zip_code"], description=request.json["description"], dates=dates
             , coordinates = 'POINT('+str(location.latitude) + " " + str(location.longitude) + ')', num_attend=0, 
             evname=request.json["eventname"]))
             db.session.commit()
@@ -92,7 +99,12 @@ def events():
             return jsonify({"error": True})
         return jsonify({"error" : False})
     if(request.json.get('action') == 'search'):
-        return jsonify([i.as_dict() for i in Events.query.all()])
+        lists = []
+        for i in db.session.query(Events, Users).filter(Events.email == Users.email).all():
+            temp = i[1].as_dict()
+            temp["type"] = temp["type"].name
+            lists.append(i[0].as_dict()|temp)
+        return jsonify(lists)
     if(request.json.get('action') == 'increment'):
         obj = Events.query(pid=request.json["id"]).one()
         obj.num_attend +=1
@@ -112,14 +124,7 @@ def wicovid():
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
     # CODE to fill DB
-<<<<<<< HEAD
     app.run()
-=======
-    #app.run()
-    #wi_covid.__table__.drop(bind=engine)
-    for i in Events.query.all():
-        print(i)            
->>>>>>> 9c5889d2f25b00aaf6c0dd11cc6a4f0e835ab908
     '''
     with engine.connect() as con:
         with open("data/covid.csv") as f:
