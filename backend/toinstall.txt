@@ -1,1 +1,1 @@
-pip install flask gunicorn sqlalchemy flask-sqlalchemy mysqlclient geoalchemy2 
+pip install flask gunicorn sqlalchemy flask-sqlalchemy mysqlclient geoalchemy2 geopy flask_cors 
