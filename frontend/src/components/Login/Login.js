@@ -3,6 +3,11 @@ import { Box, Heading, Container, Button, Stack } from "@chakra-ui/react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Redirect } from 'react-router-dom';
 
+import background from '../../images/volunteering2-2.png';
+import logo from '../../images/logo.png';
+
+import './Login.css'
+
 function Login() {
   const {
     isLoading,
@@ -26,41 +31,53 @@ function Login() {
     return <Redirect to="/dashboard" />
   } else {
     return (
-      <Container maxW={'3xl'}>
-        <Stack
-          as={Box}
-          textAlign={'center'}
-          spacing={{ base: 8, md: 14}}
-          py={{ base:20, md: 36}}
-        >
-        <Heading
-          fontWeight={600}
-          fontSize={{ base: '2xl', sm: '4xl', md: '6xl'}}
-          lineHeight={'110%'}
-        >
-        Aeris
-        </Heading>
-        <Heading
-          fontWeight={400}
-          fontSize={{base: '2xl', sm: '4xl', md: '6xl'}}
-          lineHeight={'110%'}
-        >
-           Volunteer Aggregator
-        </Heading>
-        </Stack>
-        <Stack
-                direction={'column'}
-                spacing={3}
-                align={'center'}
-                alignSelf={'center'}
-                position={'relative'}
-        >
-                <Button onClick={() => loginWithRedirect()}>Log In</Button>;
-                <Button variant={'link'} colorScheme={'blue'} size={'sm'}>
-                    Learn more
-                </Button>
-              </Stack>
-      </Container>
+      <Box 
+          height={'100vh'}
+          width={'100vw'}
+          display={'grid'}
+          placeItems={'center'}
+          backgroundImage={background}
+      >
+        <div className="Container">
+          <div>
+            <Box display='flex' justifyContent='center'>
+              <img 
+              src={logo}
+              width={300}
+              height={300}
+              alias='aeris'
+              />
+            </Box>
+            <Heading
+              fontWeight={600}
+              textColor={'white'}
+              fontSize={{ base: '2xl', sm: '4xl', md: '6xl'}}
+              lineHeight={'110%'}
+              textAlign={'center'}
+              marginBottom={'5vh'}
+            >
+              AΞЯIS
+            </Heading>
+            <Heading
+              fontWeight={400}
+              textColor={'white'}
+              fontSize={{base: 'xl', sm: '2xl', md: '4xl'}}
+              lineHeight={'110%'}
+              marginBottom={'5vh'}
+              textAlign={'center'}
+            >
+              A simple manager for both organizers and volunteers
+            </Heading>
+            <Box display={'grid'} placeItems={'center'} >
+              <Button 
+                variant='solid'
+                onClick={() => loginWithRedirect()}
+                width={'10vw'}
+              >Log In</Button>
+            </Box>
+          </div>
+        </div>
+      </Box>
     );
   }
 }
