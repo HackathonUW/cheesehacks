@@ -45,7 +45,7 @@ function Login() {
           fontSize={{base: '2xl', sm: '4xl', md: '6xl'}}
           lineHeight={'110%'}
         >
-        Pollution Tracker
+           Volunteer Aggregator
         </Heading>
         </Stack>
         <Stack
