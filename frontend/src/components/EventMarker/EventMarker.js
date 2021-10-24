@@ -11,19 +11,20 @@ function EventMarker({event}) {
   const { user } = useAuth0();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  function onJoinEvent() {
+  function handleJoinEvent() {
     const options = {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
+        action: "attended",
         pid: event.pid,
         email: user.email
       })
 		};
 
-    console.log("JOINING EVENT", event)
+    console.log("JOINING EVENT", options)
     fetch("https://cheesehack-backend.herokuapp.com/users", options)
       .then(response => response.json())
       .then(res => {
@@ -32,7 +33,6 @@ function EventMarker({event}) {
       .catch(err => {
         console.error(err);
       });
-      
   }
 
   return (
@@ -70,7 +70,7 @@ function EventMarker({event}) {
           </ModalBody>
 
           <ModalFooter>
-            <Button onClick={onJoinEvent} colorScheme="blue">Join Event!</Button>
+            <Button onClick={() => handleJoinEvent()} colorScheme="blue">Join Event!</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
