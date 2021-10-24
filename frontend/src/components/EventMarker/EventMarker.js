@@ -1,30 +1,95 @@
+import { useEffect, useState } from 'react';
 import { Marker } from "react-simple-maps";
 import ReactTooltip from "react-tooltip";
 import { useToast, Box, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, useDisclosure, Link } from '@chakra-ui/react';
 import { useAuth0 } from "@auth0/auth0-react";
 
 import { FaMapMarkerAlt } from 'react-icons/fa';
-
+import { AiOutlineCalendar, AiFillCalendar } from 'react-icons/ai'
+import { MdDescription } from 'react-icons/md';
 import './EventMarker.js';
 
 function EventMarker({event}) {
   const toast = useToast();
   const { user } = useAuth0();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [fetchingStatus, setFetchingStatus] = useState();
+  const [attending, setAttending] = useState();
+  const [fetching, setFetching] = useState();
 
-  function getJoinedEvent() {
+  useEffect(() => {
+    getAttendance();
+  }, isOpen)
+
+  function getAttendance() {
     const options = {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-        action: "attended",
+        action: "list",
         pid: event.pid,
         email: user.email
       })
 		};
+
+    setFetching(true);
+    fetch("https://cheesehack-backend.herokuapp.com/users", options)
+    .then(response => response.json())
+    .then(res => {
+      console.log(res.length > 0);
+      setAttending(res.length > 0);
+    })
+    .catch(err => {
+      console.error(err);
+    })
+    .finally(() => {
+      setFetching(false);
+    });
+  }
+
+  function handleLeaveEvent() {
+    const options = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+        action: "delete",
+        pid: event.pid,
+        email: user.email
+      })
+		};
+
+    setFetching(true);
+    console.log("LEAVING EVENT", options)
+    fetch("https://cheesehack-backend.herokuapp.com/users", options)
+      .then(response => response.json())
+      .then(res => {
+        if (!res.error) {
+          toast({
+            title: "Left Event Successfully",
+            status: "success",
+            duration: 2500,
+            isClosable: true,
+          })
+        } else {
+          toast({
+            title: "Oops!",
+            description: "Was not able to leave event",
+            status: "fail",
+            duration: 2500,
+            isClosable: true,
+          }) 
+        }
+        setAttending(false);
+      })
+      .catch(err => {
+        console.error(err);
+      })
+      .finally(() => {
+        setFetching(false);
+      });
   }
 
   function handleJoinEvent() {
@@ -40,6 +105,7 @@ function EventMarker({event}) {
       })
 		};
 
+    setFetching(true);
     console.log("JOINING EVENT", options)
     fetch("https://cheesehack-backend.herokuapp.com/users", options)
       .then(response => response.json())
@@ -55,15 +121,19 @@ function EventMarker({event}) {
         } else {
           toast({
             title: "Oops!",
-            description: "You've already joined this event",
+            description: "Was not able to join event",
             status: "fail",
             duration: 2500,
             isClosable: true,
           }) 
         }
+        setAttending(true);
       })
       .catch(err => {
         console.error(err);
+      })
+      .finally(() => {
+        setFetching(false);
       });
   }
 
@@ -81,20 +151,23 @@ function EventMarker({event}) {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{event.title ?? "Example Event"}</ModalHeader>
+          <ModalHeader>{event.evname ?? "Example Event"}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Box>
-              Start Date: {event.startDate}
+              {event.description ?? "This is a description of a sample event! Please sign up!"}
             </Box>
-            <Box>
-              End Date: {event.endDate}
+            <br/>
+            <Box display={'flex'} justifyContent={'space-evenly'} alignItems={'center'}>
+              <AiOutlineCalendar display={'inline-block'}/> {new Date(event.startDate).toLocaleString()}
             </Box>
-            <Box>
-              Description: {event.description ?? "This is a description of a sample event! Please sign up!"}
+            <Box display={'flex'} justifyContent={'space-evenly'} alignItems={'center'}>
+              <AiFillCalendar/> 
+              <div> {new Date(event.endDate).toLocaleString()} </div>
             </Box>
-            <Box>
-              Event Created By: &nbsp;
+            <br/>
+            <Box display={'flex'}>
+              Creator: &nbsp;
               <Link href={event.email}>
                 {event.email ?? "example@gmail.com"}
               </Link>
@@ -102,8 +175,18 @@ function EventMarker({event}) {
           </ModalBody>
 
           <ModalFooter>
-            <Button onClick={() => {
-              handleJoinEvent(toast)}} colorScheme="blue">Join Event!</Button>
+            {fetching ? 
+            <Button isLoading colorScheme="blue"/>
+            :
+            attending ? 
+            <>
+              <Button variant="secondary" onClick={() => {handleLeaveEvent(toast)}}>Leave Event</Button>
+              <Button isDisabled colorScheme="blue">Attending/Attended</Button>
+            </>
+              : 
+              <Button onClick={() => {
+                handleJoinEvent(toast)}} colorScheme="blue">Join Event!</Button>
+            }
           </ModalFooter>
         </ModalContent>
       </Modal>

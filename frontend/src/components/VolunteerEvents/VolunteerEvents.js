@@ -1,11 +1,12 @@
 import React, { useState, useCallback } from "react";
-import { FormControl, FormLabel, Box, Heading, Button, Input, Textarea, InputGroup } from "@chakra-ui/react";
+import { FormControl, FormLabel, Box, Heading, Button, Input, Textarea, InputGroup, useToast } from "@chakra-ui/react";
 import events from "../Calendar/events";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import './VolunteerEvents.css'
 
 function Events() {
+  const toast = useToast();
 	const [name, setName] = useState();
 	const [desc, setDesc] = useState();
 	const [address, setAddress] = useState();
@@ -18,14 +19,14 @@ function Events() {
 
 	//Number of events API
 
-  function handleCreateEvent() {
+  function handleCreateEvent(toast) {
     getEventLength()
     .then(() => {
-      postEvent();
+      postEvent(toast);
     })
   }
 
-  function getEventLength() {
+  function getEventLength(toast) {
     const options = {
 			method: 'POST',
 			headers: {
@@ -68,7 +69,23 @@ function Events() {
 		fetch("https://cheesehack-backend.herokuapp.com/events", options)
       .then(response => response.json())
       .then(res => {
-        console.log("EVENT CREATED:", res.error);
+        if (!res.error) {
+          toast({
+            title: "Created Event!",
+            description: "Successfully created " + name + "!",
+            status: "success",
+            duration: 2500,
+            isClosable: true,
+          });
+        } else {
+          toast({
+            title: "Oops!",
+            description: "Was not able to create event " + name,
+            status: "fail",
+            duration: 2500,
+            isClosable: true,
+          });
+        }
       })
 		  .catch(error => console.error('Error: ', error));
   }
@@ -123,7 +140,7 @@ function Events() {
 				<Textarea onChange={event => setDesc(event.currentTarget.value)} />
 			</FormControl>
 			</Box>
-			<Button width={500} mb={5} mt={4} type="submit" onClick={handleCreateEvent}>
+			<Button width={500} mb={5} mt={4} type="submit" onClick={() => {handleCreateEvent(toast)}}>
 				Submit
 			</Button>
 		</div>

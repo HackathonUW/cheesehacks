@@ -92,8 +92,8 @@ const MapChart = () => {
         data.forEach(event => {
           event.coordinates = event.coordinates.split('(')[1].split(')')[0].split(' ').map(Number);
           event.coordinates = [event.coordinates[1], event.coordinates[0]];
-          // TODO: Add Date times
-          // console.log(event.dates.split(','));   
+          event.startDate = event.dates.split(',')[0];
+          event.endDate = event.dates.split(',')[1];
           // event.startDate = moment(event.dates.split(',')[0], 'YYYY-MM-DD HH:mm:ss').toDate();
           // event.endDate = moment(event.dates.split(',')[1], 'YYYY-MM-DD HH:mm:ss').toDate();
         });
