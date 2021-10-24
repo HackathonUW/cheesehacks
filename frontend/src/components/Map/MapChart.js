@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ComposableMap, ZoomableGroup, Geographies, Geography } from "react-simple-maps";
 import { scaleQuantize } from "d3-scale";
-import { csv } from "d3-fetch";
+import { Spring, config } from "react-spring";
 
 /**
  * Centering on markers: https://github.com/zcreativelabs/react-simple-maps/issues/62
@@ -13,16 +13,17 @@ const geoUrl = "https://raw.githubusercontent.com/deldersveld/topojson/master/co
 const colorScale = scaleQuantize()
   .domain([1, 10])
   .range([
-    "#ffedea",
-    "#ffcec5",
-    "#ffad9f",
-    "#ff8a75",
-    "#ff5533",
-    "#e2492d",
-    "#be3d26",
-    "#9a311f",
-    "#782618"
+    '#eeeeee', 
+    '#ecd7d4', 
+    '#e9c1bb', 
+    '#e5aba3', 
+    '#df948b', 
+    '#d77e74', 
+    '#cf675e', 
+    '#c64e48', 
+    '#bb3333'
   ]);
+
 
 const MapChart = () => {
   const [center, setCenter] = useState([0, 0]);
@@ -47,7 +48,17 @@ const MapChart = () => {
       });
   }, []);
 
+  function handleGeographyClick(geo) {
+    console.log(geo.geometry.coordinates[0][0]);
+    setCenter(geo.geometry.coordinates[0][0]);
+  }
+
   return (
+    <Spring
+      from={{ center: 1 }}
+      to={{ center: center }}
+      config={config.slow}
+    >
       <ComposableMap 
           projection="geoConicConformal" 
           projectionConfig={{
@@ -58,28 +69,33 @@ const MapChart = () => {
           }}
           style={{height: '100%'}}
       >
-        {/* <ZoomableGroup center={center} zoom={zoom}> */}
+        <ZoomableGroup 
+            center={center} 
+            zoom={zoom}
+            maxZoom={1}>
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
               geographies.map(geo => {
-                console.log(geo);
-                const cur = data.find(s => s.id === geo.id);
+                const cur = data.find(s => s.country === geo.properties.NAME);
                 return (
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
+                    onClick={() => {handleGeographyClick(geo); }}
                     fill={colorScale(cur ? cur.unemployment_rate : "#EEE")}
                     style={{
                       default: {
-                        fill: '#eeeeee',
+                        outline: "none",
+                        stroke: '#dddddd',
                       },
                       hover: {
-                        fill: '#bbbbbb',
-                        outline: "none"
+                        outline: "none",
+                        stroke: '#999999',
+                        strokeWidth: '5px',
+                        zIndex: 100
                       },
                       pressed: {
-                        fill: 'none',
-                        outline: "none"
+                        outline: "none",
                       }
                     }}
                   />
@@ -87,8 +103,9 @@ const MapChart = () => {
               })
             }
           </Geographies>
-        {/* </ZoomableGroup> */}
+        </ZoomableGroup>
       </ComposableMap>
+    </Spring>
   );
 };
 
