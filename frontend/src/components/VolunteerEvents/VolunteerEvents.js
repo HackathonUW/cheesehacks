@@ -11,25 +11,45 @@ function Events() {
 	const [dateTime, setDateTime] = useState();
 	const [fdateTime, setFDateTime] = useState();
 	const { user } = useAuth0();
+	let count = 103;
 	//Number of events API
 
-	const createEvent = useCallback((name,address,zip,desc, dateTime, fdateTime, id, email) => {
+	const createEvent = useCallback((name,address,zip,desc, dateTime, fdateTime, email) => {
 		console.log(dateTime);
+		const lengthOptions = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({action: "length"})
+		}
+		let id;
+		fetch("https://cheesehack-backend.herokuapp.com/events",lengthOptions).then(response => response.json()).then(data => id = data).then(console.log(id))
+		var info = {
+			action: "add",
+			id: count++,
+			eventname: name,
+			email: email,
+			description: desc,
+			address: address,
+			zip_code: zip,
+			dates: {dateTime, fdateTime},
+		};
 		const options = {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({action: "add", id: id, eventname: name, email: email, description: desc, address: address, zip_code: zip, dates: {dateTime,fdateTime}})
+			body: JSON.stringify(info)
 		}
-		console.log(JSON.stringify({action: "add", id: parseInt("32566676764"), eventname: name, email: email, description: desc, address: address, zip_code: zip, dates: {dateTime,fdateTime}}))
+		console.log(JSON.stringify(info))
 		fetch("https://cheesehack-backend.herokuapp.com/events",options).then(response => console.log(response.json()))
 		.catch(error => console.error('Error: ', error));
 	},[])
 
 	const handleCreateEvent = useCallback(() => {
-		createEvent(name, address, zip, desc, dateTime, fdateTime, user.sub, user.email);
-	},[name, address, zip, desc,createEvent, user.sub, user.email, dateTime, fdateTime])
+		createEvent(name, address, zip, desc, dateTime, fdateTime, user.email);
+	},[name, address, zip, desc,createEvent, user.email, dateTime, fdateTime])
 
 	return (
 		<div className="events">
