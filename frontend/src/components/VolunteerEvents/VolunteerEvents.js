@@ -1,20 +1,36 @@
 import React, { useState, useCallback } from "react";
-import { FormControl, FormLabel, Box, Heading, Button, Input, InputRightAddon, InputGroup, Textarea } from "@chakra-ui/react";
+import { FormControl, FormLabel, Box, Heading, Button, Input, Textarea, InputGroup } from "@chakra-ui/react";
 import events from "../Calendar/events";
 import { useAuth0 } from "@auth0/auth0-react";
 
 function Events() {
 	const [name, setName] = useState();
-	const [email, setEmail] = useState();
 	const [desc, setDesc] = useState();
 	const [address, setAddress] = useState();
 	const [zip, setZip] = useState();
+	const [dateTime, setDateTime] = useState();
+	const [fdateTime, setFDateTime] = useState();
 	const { user } = useAuth0();
 	//Number of events API
 
-	const createEvent = useCallback(() => {
-
+	const createEvent = useCallback((name,address,zip,desc, dateTime, fdateTime, id, email) => {
+		console.log(dateTime);
+		const options = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({action: "add", id: id, eventname: name, email: email, description: desc, address: address, zip_code: zip, dates: {dateTime,fdateTime}})
+		}
+		console.log(JSON.stringify({action: "add", id: parseInt("32566676764"), eventname: name, email: email, description: desc, address: address, zip_code: zip, dates: {dateTime,fdateTime}}))
+		fetch("https://cheesehack-backend.herokuapp.com/events",options).then(response => console.log(response.json()))
+		.catch(error => console.error('Error: ', error));
 	},[])
+
+	const handleCreateEvent = useCallback(() => {
+		createEvent(name, address, zip, desc, dateTime, fdateTime, user.sub, user.email);
+	},[name, address, zip, desc,createEvent, user.sub, user.email, dateTime, fdateTime])
+
 	return (
 		<div className="events">
 			<Box textAlign="center">
@@ -43,7 +59,7 @@ function Events() {
 				<FormLabel>
 					Event Location
 				</FormLabel>
-				<Input placeholder="777 Torybrook Lane" onChange={event => setAddress(event.currentTarget.value)} />
+				<Input onChange={event => setAddress(event.currentTarget.value)} />
 			</FormControl>
 			<FormControl my={5} id="zip" isRequired>
 				<FormLabel>
@@ -53,16 +69,19 @@ function Events() {
 			</FormControl>
 			<FormControl my={5} id="date" isRequired>
 				<FormLabel>
-					Event Date and Time
+					Event Start and End Time
 				</FormLabel>
-				<Input type="datetime-local"></Input>
+				<InputGroup>
+					<Input type="datetime-local" onChange={event => setDateTime(event.currentTarget.value)}></Input>
+					<Input type="datetime-local" onChange={event => setFDateTime(event.currentTarget.value)}></Input>
+				</InputGroup>
 			</FormControl>
 			<FormControl id="ev-desc" my={5}>
 				<FormLabel>Event Description</FormLabel>
 				<Textarea onChange={event => setDesc(event.currentTarget.value)} />
 			</FormControl>
 			</Box>
-			<Button width={500} ml={500} mb={5} mt={4} type="submit" onClick={createEvent}>
+			<Button width={500} ml={500} mb={5} mt={4} type="submit" onClick={handleCreateEvent}>
 				Submit
 			</Button>
 		</div>
