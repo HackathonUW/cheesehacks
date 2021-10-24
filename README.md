@@ -1,4 +1,4 @@
-# Our App
+# AΞЯIS
 
 **Geoffrey Xue, Aiden Cohen, Akshay Joshi, Kitiara Moore**
 
