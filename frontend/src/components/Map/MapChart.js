@@ -118,7 +118,7 @@ const MapChart = () => {
         <ZoomableGroup 
             center={[-89.84427405362867, 44.68479592051389]}
             maxZoom={1}>
-          <Geographies geography={geoUrl}>
+          <Geographies geography={geoUrl} disableOptimisation>
             {({ geographies }) =>
               geographies.map(geo => {
                 const cur = mapData.find(s => s.county === geo.properties.NAME);

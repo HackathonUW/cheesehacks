@@ -1,5 +1,36 @@
 .Map {
   height: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
+}
+
+.addEvent {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin: 30px;
+  width: 8vh;
+  height: 8vh;
+  border-radius: 50%;
+
+}
+
+.addEventCircle {
+  display: grid;
+  place-items: center;
+  background-color: #5092c8;
+  transition: background 0.25s;
+}
+
+.addEventCircle:hover {
+  background-color: #367ab3;
+}
+
+.addIcon {
+  color: white;
+  width: 4vh;
+  height: 4vh;
+  display: grid;
+  place-items: center;
 }

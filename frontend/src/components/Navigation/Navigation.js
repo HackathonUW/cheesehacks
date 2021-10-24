@@ -29,8 +29,6 @@ import './Navigation.css';
 const Links = [
   {name: 'Map', route: '/dashboard/'},
   {name: 'Calendar', route: '/dashboard/calendar'},
-  {name: 'Create Event', route: '/dashboard/volunteerevents'},
-  {name: 'My Profile', route: '/dashboard/profile/'}
 ];
 
 function Navigation({children}) {
@@ -39,7 +37,7 @@ function Navigation({children}) {
 
   return (
     <>
-      <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
+      <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4} borderBottomWidth={2} borderColor={'#5092c8'}>
         <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
           <IconButton
             size={'md'}
