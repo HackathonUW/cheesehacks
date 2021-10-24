@@ -21,7 +21,7 @@ function Dashboard() {
         <Switch>
           <Route exact path='/dashboard'>
             <Map />
-            </Route>
+          </Route>
           <Route path={'/dashboard/calendar'}>
             <Calendar />
           </Route>

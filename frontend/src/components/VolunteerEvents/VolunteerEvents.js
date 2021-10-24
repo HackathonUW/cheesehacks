@@ -1,11 +1,12 @@
 import React, { useState, useCallback } from "react";
-import { FormControl, FormLabel, Box, Heading, Button, Input, Textarea, InputGroup } from "@chakra-ui/react";
+import { Select, FormControl, FormLabel, Box, Heading, Button, Input, Textarea, InputGroup, useToast } from "@chakra-ui/react";
 import events from "../Calendar/events";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import './VolunteerEvents.css'
 
 function Events() {
+  const toast = useToast();
 	const [name, setName] = useState();
 	const [desc, setDesc] = useState();
 	const [address, setAddress] = useState();
@@ -13,15 +14,16 @@ function Events() {
 	const [dateTime, setDateTime] = useState();
 	const [fdateTime, setFDateTime] = useState();
 	const { user } = useAuth0();
+  const [topic, setTopic] = useState("covid");
 
   const [length, setLength] = useState();
 
 	//Number of events API
 
-  function handleCreateEvent() {
+  function handleCreateEvent(toast) {
     getEventLength()
     .then(() => {
-      postEvent();
+      postEvent(toast);
     })
   }
 
@@ -44,7 +46,7 @@ function Events() {
       })
   }
 
-  function postEvent() {
+  function postEvent(toast) {
     var info = {
 			action: "add",
 			id: length + 1,
@@ -54,6 +56,7 @@ function Events() {
 			address: address,
 			zip_code: zip,
 			dates: {dateTime, fdateTime},
+      topic: topic,
 		};
 
 		const options = {
@@ -68,7 +71,24 @@ function Events() {
 		fetch("https://cheesehack-backend.herokuapp.com/events", options)
       .then(response => response.json())
       .then(res => {
-        console.log("EVENT CREATED:", res.error);
+        console.log("SUCCESS:", !res.error)
+        if (!res.error) {
+          toast({
+            title: "Created Event!",
+            description: "Successfully created " + name + "!",
+            status: "success",
+            duration: 2500,
+            isClosable: true,
+          });
+        } else {
+          toast({
+            title: "Oops!",
+            description: "Was not able to create event " + name,
+            status: "fail",
+            duration: 2500,
+            isClosable: true,
+          });
+        }
       })
 		  .catch(error => console.error('Error: ', error));
   }
@@ -103,6 +123,16 @@ function Events() {
 				</FormLabel>
 				<Input onChange={event => setAddress(event.currentTarget.value)} />
 			</FormControl>
+      <FormControl my={5} id="topic" isRequired>
+      	<FormLabel>
+					Topic
+        </FormLabel>
+        <Select value={topic}  my={5} onChange={(e) => {setTopic(e.target.value)}}>
+          <option value="covid">COVID-19</option>
+          <option value="air">Air Pollution</option>
+        </Select>
+      </FormControl>
+
 			<FormControl my={5} id="zip" isRequired>
 				<FormLabel>
 					Zip
@@ -123,7 +153,7 @@ function Events() {
 				<Textarea onChange={event => setDesc(event.currentTarget.value)} />
 			</FormControl>
 			</Box>
-			<Button width={500} mb={5} mt={4} type="submit" onClick={handleCreateEvent}>
+			<Button width={500} mb={5} mt={4} type="submit" onClick={() => {handleCreateEvent(toast)}}>
 				Submit
 			</Button>
 		</div>
