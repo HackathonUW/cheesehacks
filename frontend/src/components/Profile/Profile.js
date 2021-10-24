@@ -1,21 +1,59 @@
 import { useEffect, useState } from "react";
-import { Box, Heading, Grid, Spinner, Card } from "@chakra-ui/react";
+import { Box, Heading, Grid, Spinner, Stack, Text, Link, Button } from "@chakra-ui/react";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import { BiUserCircle } from 'react-icons/bi';
 import { FaBirthdayCake } from 'react-icons/fa';
 import { GiAges } from 'react-icons/gi';
-import { AiFillPhone } from 'react-icons/ai';
+import { AiFillPhone,  AiOutlineCalendar, AiFillCalendar  } from 'react-icons/ai';
 
 function Profile() {
 	const { user } = useAuth0();
 
   const [fetching, setFetching] = useState(false);
+  const [eventIds, setEventIds] = useState([]);
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
+    getAttendedIds();
+  }, []);
+
+  useEffect(() => {
     getAttendingEvents();
-  }, [])
+  }, [eventIds]);
+
+  useEffect(() => {
+    console.log(events);
+  }, [events]);
+
+  function getAttendedIds() {
+    const options = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+        email: user.email
+      })
+		};
+
+    console.log(options);
+    setFetching(true);
+    fetch("https://cheesehack-backend.herokuapp.com/attended", options)
+    .then(response => response.json())
+    .then(res => {
+      console.log(res);
+      if (!res) {
+        throw Error("Null res");
+      }
+      var ids = res.map(res => res.pid);
+      setEventIds(ids);
+    })
+    .catch(err => {
+      console.error(err);
+    });
+    
+  }
 
   function getAttendingEvents() {
     const options = {
@@ -24,8 +62,8 @@ function Profile() {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-        action: "list",
-        email: user.email
+        action: "ids",
+        id: eventIds
       })
 		};
 
@@ -33,19 +71,50 @@ function Profile() {
     setFetching(true);
     fetch("https://cheesehack-backend.herokuapp.com/events", options)
     .then(response => response.json())
-    .then(res => {
-      console.log(res);
-      if (!res) {
-        throw Error("Null res");
+    .then(data => {
+      console.log(data);
+      if (!data) {
+        throw Error("Null data");
       }
-      setEvents(res);
+      data.forEach(event => {
+        event.startDate = event.dates.split(',')[0];
+        event.endDate = event.dates.split(',')[1];
+      });
+      setEvents(data);
+      setFetching(false);
     })
     .catch(err => {
       console.error(err);
-    })
-    .finally(() => {
       setFetching(false);
     });
+  }
+
+  function handleLeaveEvent(event) {
+    const options = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+        action: "delete",
+        pid: event.pid,
+        email: user.email
+      })
+		};
+
+    console.log("LEAVING EVENT", options)
+    fetch("https://cheesehack-backend.herokuapp.com/users", options)
+      .then(response => response.json())
+      .then(res => {
+        if (!res.error) {
+          setEvents(events.filter(e => {
+            return e.pid !== event.pid;
+          }));
+        }
+      })
+      .catch(err => {
+        console.error(err);
+      });
   }
 
 	return (
@@ -84,11 +153,37 @@ function Profile() {
       {fetching ?
         <Spinner/>
         :
-        events.length > 0 ? events.map(event => (
-          <Card>
-            {event.evname}
-          </Card>
-        )) : null
+        events.length > 0 ? 
+        <Box display={'flex'} flexWrap={'wrap'}>
+        {events.map(event => (
+          <Stack key={event.pid} p="4" boxShadow="lg" m="4" borderRadius="sm" width="30%">
+            <Stack direction="row" alignItems="center">
+              <Text fontWeight="semibold">{event.evname}</Text>
+            </Stack>
+            <Stack direction="column" alignItems="left">
+              <Box>
+                {event.description ?? "This is a description of a sample event! Please sign up!"}
+              </Box>
+              <br/>
+              <Box display={'flex'} justifyContent={'left'} alignItems={'center'}>
+                <AiOutlineCalendar display={'inline-block'}/> {new Date(event.startDate).toLocaleString()}
+              </Box>
+              <Box display={'flex'} justifyContent={'left'} alignItems={'center'}>
+                <AiFillCalendar/> 
+                <div> {new Date(event.endDate).toLocaleString()} </div>
+              </Box>
+              <br/>
+              <Box display={'flex'}>
+                Creator: &nbsp;
+                <Link href={event.email}>
+                  {event.email ?? "example@gmail.com"}
+                </Link>
+              </Box>
+              <Button variant="secondary" onClick={() => {handleLeaveEvent(event)}}>Leave Event</Button>
+            </Stack>
+          </Stack>
+        ))}</Box>
+         : null
       }
 		</div>
 	);

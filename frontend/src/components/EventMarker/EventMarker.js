@@ -113,7 +113,7 @@ function EventMarker({event}) {
         if (!res.error) {
           toast({
             title: "Joined Event!",
-            description: "You have joined " + event.name + "!",
+            description: "You have joined " + event.evname + "!",
             status: "success",
             duration: 2500,
             isClosable: true,

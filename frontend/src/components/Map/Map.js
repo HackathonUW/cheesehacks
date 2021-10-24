@@ -65,7 +65,6 @@ function Map() {
       <Select value={topic} onChange={(e) => {setTopic(e.target.value)}}>
         <option value="covid">COVID-19</option>
         <option value="air">Air Pollution</option>
-        <option value="water">Water Pollution</option>
       </Select>
       <MapChart topic={topic}/>
       {!fetching && type == 'user' ? 
