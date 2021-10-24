@@ -71,8 +71,8 @@ function Navigation({children}) {
               spacing={4}
               display={{ base: 'none', md: 'flex' }}>
               {Links.map((link) => (
-                <Link to={link.route}>
-                  <NavigationLink key={link.name}>
+                <Link to={link.route} key={link.name}>
+                  <NavigationLink>
                     {link.name}
                   </NavigationLink>
                 </Link>
