@@ -28,9 +28,7 @@ import './Navigation.css';
 
 const Links = [
   {name: 'Map', route: '/dashboard/'},
-  {name: 'Calendar', route: '/dashboard/calendar'},
-  {name: 'Create Event', route: '/dashboard/volunteerevents'},
-  {name: 'My Profile', route: '/dashboard/profile/'}
+  {name: 'Calendar', route: '/dashboard/calendar'}
 ];
 
 function Navigation({children}) {
