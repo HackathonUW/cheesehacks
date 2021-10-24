@@ -8,7 +8,6 @@ from sqlalchemy import func
 from sqlalchemy.types import UserDefinedType
 from datetime import datetime
 from flask_cors import CORS
-import requests
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
