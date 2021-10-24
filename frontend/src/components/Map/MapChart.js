@@ -4,6 +4,8 @@ import { scaleQuantize } from "d3-scale";
 
 import EventMarker from './../EventMarker/EventMarker';
 
+import moment from 'moment';
+
 /**
  * Centering on markers: https://github.com/zcreativelabs/react-simple-maps/issues/62
  */
@@ -49,7 +51,7 @@ const MapChart = () => {
   }, []);
 
   useEffect(() => {
-    console.log("DATA" + mapData);
+    // console.log("DATA" + mapData);
     var values = mapData.map(data => data.Cases_per_100);
     var min = Math.min.apply(0, values),
         max = Math.max.apply(100, values);
@@ -91,7 +93,9 @@ const MapChart = () => {
         data.forEach(event => {
           event.coordinates = event.coordinates.split('(')[1].split(')')[0].split(' ').map(Number);
           event.coordinates = [event.coordinates[1], event.coordinates[0]];
-          
+          console.log(event.dates.split(','));   
+          // event.startDate = moment(event.dates.split(',')[0], 'YYYY-MM-DD HH:mm:ss').toDate();
+          // event.endDate = moment(event.dates.split(',')[1], 'YYYY-MM-DD HH:mm:ss').toDate();
         });
         setEventData(data);
       })
