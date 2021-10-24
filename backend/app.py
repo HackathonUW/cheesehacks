@@ -65,7 +65,12 @@ class Attended(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     pid = db.Column(db.Integer, db.ForeignKey('events.pid'))
     email = db.Column(db.String(255), db.ForeignKey('users.email'))
+    def as_dict(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
+@app.route('/attended', methods=['POST'])
+def attended():
+    return jsonify([i.as_dict() for i in Attended.query.all()])
 
 @app.route('/users', methods=['POST'])
 def users():
@@ -88,6 +93,7 @@ def users():
     if(request.json.get('action') == 'attended'):
         db.session.add(Attended(pid=request.json['pid'], email=request.json['email']))
         db.session.commit()
+        return jsonify({"error" : False})
     if(request.json.get('action') == 'list'):
         return jsonify([i.as_dict() for i in db.session.query(Attended,Events).filter(Attended.email==request.json['email'],Attended.pid==Events.pid)])
 
@@ -134,7 +140,7 @@ def wicovid():
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
     # CODE to fill DB
-    db.create_all()
+    
     app.run()
 
     '''
