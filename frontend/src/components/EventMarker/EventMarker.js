@@ -22,6 +22,53 @@ function EventMarker({event}) {
     getParticipants();
   }, [isOpen])
 
+  function getParticipants() {
+    const options = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+        action: "ids",
+        id: [event.pid]
+      })
+		};
+
+    fetch("https://cheesehack-backend.herokuapp.com/events", options)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        console.log(data[0].num_attend);
+        setParticipants(data[0].num_attend);
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }
+
+  function changeParticipants(num) {
+    const options = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+        action: "increment",
+        num: num,
+        id: event.pid
+      })
+		};
+
+    fetch("https://cheesehack-backend.herokuapp.com/events", options)
+      .then(response => response.json())
+      .then(res => {
+        console.log(!res.error);
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }
+
   function getAttendance() {
     const options = {
 			method: 'POST',
@@ -87,59 +134,13 @@ function EventMarker({event}) {
         setAttending(false);
         changeParticipants(-1);
         setParticipants(participants - 1);
+        event.attending = false;
       })
       .catch(err => {
         console.error(err);
       })
       .finally(() => {
         setFetching(false);
-      });
-  }
-
-  function getParticipants() {
-    const options = {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-        action: "ids",
-        id: [event.pid]
-      })
-		};
-
-    fetch("https://cheesehack-backend.herokuapp.com/events", options)
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        console.log(data[0].num_attend);
-        setParticipants(data[0].num_attend);
-      })
-      .catch(err => {
-        console.error(err);
-      });
-  }
-
-  function changeParticipants(num) {
-    const options = {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-        action: "increment",
-        num: num,
-        id: event.pid
-      })
-		};
-
-    fetch("https://cheesehack-backend.herokuapp.com/events", options)
-      .then(response => response.json())
-      .then(res => {
-        console.log(!res.error);
-      })
-      .catch(err => {
-        console.error(err);
       });
   }
 
@@ -181,6 +182,7 @@ function EventMarker({event}) {
         setAttending(true);
         changeParticipants(1);
         setParticipants(participants + 1);
+        event.attending = true;
       })
       .catch(err => {
         console.error(err);
@@ -200,7 +202,7 @@ function EventMarker({event}) {
           >
             {/* <svg xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 857 538"><defs><style>{`.cls-1{fill:#fefefe;}.cls-2{fill:#75d95e;}.cls-3{fill:#0c800c;}`}</style></defs><path class="cls-1" d="M507,204h857V742H507Zm532.8,74c-5.27.35-10.59.39-15.82,1.11-20.7,2.86-39.82,10.08-56.19,23.15-39.11,31.22-54.52,71.95-45.36,121,4.14,22.16,15.33,41.43,31,57.91a42.28,42.28,0,0,1,7.25,10.56C967,504.75,973,517.92,979,531c13,27.84,26,55.66,38.85,83.54,3.15,6.82,7.86,11.89,14.93,14.45,11.16,4,23.9-1.52,29.45-13,5-10.32,9.61-20.82,14.44-31.22q20.22-43.6,40.55-87.16c2.6-5.53,5-11.56,9-16,24.12-26.46,35.56-57,33-93a115,115,0,0,0-7.68-34.56C1132.16,305.5,1088.69,279.08,1039.8,278Z" transform="translate(-507 -204)"/><path class="cls-2" d="M1039.8,278c48.89,1.08,92.36,27.5,111.73,76.1a115,115,0,0,1,7.68,34.56c2.6,36-8.84,66.53-33,93-4,4.4-6.39,10.43-9,16q-20.43,43.51-40.55,87.16c-4.83,10.4-9.45,20.9-14.44,31.22-5.55,11.49-18.29,17.06-29.45,13-7.07-2.56-11.78-7.63-14.93-14.45C1005,586.67,992,558.85,979,531c-6.09-13.09-12-26.26-18.32-39.24a42.28,42.28,0,0,0-7.25-10.56c-15.71-16.48-26.9-35.75-31-57.91-9.16-49.09,6.25-89.82,45.36-121,16.37-13.07,35.49-20.29,56.19-23.15C1029.21,278.39,1034.53,278.35,1039.8,278Zm-.36,180c32.16.35,60.41-24.95,60.39-59.73,0-33.57-24.68-59.57-59.87-60.13-33.73-.55-59.55,27.72-60.07,59.14C979.33,430.72,1008.62,458.83,1039.44,458Z" transform="translate(-507 -204)"/><path class="cls-3" d="M1039.44,458c-30.82.83-60.11-27.28-59.55-60.72.52-31.42,26.34-59.69,60.07-59.14,35.19.56,59.86,26.56,59.87,60.13C1099.85,433.05,1071.6,458.35,1039.44,458Z" transform="translate(-507 -204)"/></svg> */}
 
-            <FaMapMarkerAlt size={28} color={'#5092c8'}/>
+            <FaMapMarkerAlt size={28} color={event.attending ? '#75da53' : '#5092c8'}/>
       </Marker>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
