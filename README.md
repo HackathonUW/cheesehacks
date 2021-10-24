@@ -2,6 +2,8 @@
 
 **Geoffrey Xue, Aiden Cohen, Akshay Joshi, Kitiara Moore**
 
+### View demo: [https://cheesehack.herokuapp.com](https://cheesehack.herokuapp.com)
+
 ## Developed using:
 - [React](https://reactjs.org/) (Frontend)
 - [Flask](https://flask.palletsprojects.com/en/2.0.x/) (Backend)
