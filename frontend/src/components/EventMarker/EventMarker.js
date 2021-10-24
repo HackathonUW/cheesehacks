@@ -2,6 +2,8 @@ import { Marker } from "react-simple-maps";
 
 import { Box, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, useDisclosure, Link } from '@chakra-ui/react';
 
+import event from '../../images/blueEvent.png';
+
 import './EventMarker.js';
 
 function EventMarker({event}) {
@@ -14,7 +16,13 @@ function EventMarker({event}) {
   return (
     <>
       <Marker coordinates={event.coordinates} onClick={onOpen} className="EventMarker" data-tip={event.address} data-for="EventMarker">
-          <circle r="10" />
+          <img
+                src={event}
+                width='35'
+                height='35'
+                className="d-inline-block align-top"
+                alt='eventTest'
+            />
       </Marker>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
