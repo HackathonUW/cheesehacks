@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { ComposableMap, ZoomableGroup, Geographies, Geography, Marker } from "react-simple-maps";
+import { ComposableMap, ZoomableGroup, Geographies, Geography } from "react-simple-maps";
 import { scaleQuantize } from "d3-scale";
 
-import blueEvent from '../../images/blueEvent.png';
+import EventMarker from './../EventMarker/EventMarker';
+
+import moment from 'moment';
 
 /**
  * Centering on markers: https://github.com/zcreativelabs/react-simple-maps/issues/62
@@ -38,18 +40,14 @@ const colorScale2 = scaleQuantize()
 
 
 const MapChart = () => {
-  const [zoom, setZoom] = useState(1);
   const [mapData, setMapData] = useState([]);
   const [eventData, setEventData] = useState([]);
 
   useEffect(() => {
-    alert("Fetching data...");
     fetchMapData();
-    fetchEventData();
   }, []);
 
   useEffect(() => {
-    console.log("DATA" + mapData);
     var values = mapData.map(data => data.Cases_per_100);
     var min = Math.min.apply(0, values),
         max = Math.max.apply(100, values);
@@ -71,6 +69,9 @@ const MapChart = () => {
       .then(data => {
         setMapData(data);
       })
+      .then(() => {
+        fetchEventData();
+      })
       .catch(error => {
         console.error(error);
       });
@@ -91,7 +92,10 @@ const MapChart = () => {
         data.forEach(event => {
           event.coordinates = event.coordinates.split('(')[1].split(')')[0].split(' ').map(Number);
           event.coordinates = [event.coordinates[1], event.coordinates[0]];
-          
+          // TODO: Add Date times
+          // console.log(event.dates.split(','));   
+          // event.startDate = moment(event.dates.split(',')[0], 'YYYY-MM-DD HH:mm:ss').toDate();
+          // event.endDate = moment(event.dates.split(',')[1], 'YYYY-MM-DD HH:mm:ss').toDate();
         });
         setEventData(data);
       })
@@ -112,27 +116,24 @@ const MapChart = () => {
           style={{height: '100%'}}
       >
         <ZoomableGroup 
-            center={[-89.84427405362867, 44.68479592051389]} 
-            zoom={zoom}
+            center={[-89.84427405362867, 44.68479592051389]}
             maxZoom={1}>
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
               geographies.map(geo => {
                 const cur = mapData.find(s => s.county === geo.properties.NAME);
-                // console.log(geo.properties.NAME);
-                // console.log(cur);
                 return (
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
                     style={{
                       default: {
-                        fill: colorScale(cur ? cur.Cases_per_100 : "#EEE"),
+                        fill: cur ? colorScale(cur.Cases_per_100) : '#eeeeee',
                         outline: "none",
                         stroke: '#dddddd',
                       },
                       hover: {
-                        fill: colorScale2(cur ? cur.Cases_per_100 : "#EEE"),
+                        fill: cur ? colorScale2(cur.Cases_per_100) : '#eeeeee',
                         outline: "none"
                       },
                       pressed: {
@@ -144,30 +145,9 @@ const MapChart = () => {
               })
             }
           </Geographies>
-          <Marker coordinates={[-89.492556, 43.090266]}>
-          <g
-            fill="none"
-            stroke="#FF5533"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            transform="translate(-12, -24)"
-          >
-            <circle cx="12" cy="10" r="3" />
-            <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z" />
-          </g>
-          </Marker>
-          {eventData.map(event => {
-            console.log(event);
-            return (
-            <Marker key={event.pid} coordinates={event.coordinates}>
-              <img
-                src={blueEvent}
-                className="d-inline-block align-top"
-                alt='blue event'
-              />
-            </Marker> );
-          })}
+          {eventData.map(event => (
+            <EventMarker key={event.pid} event={event} />
+          ))}
         </ZoomableGroup>
       </ComposableMap>
   );
