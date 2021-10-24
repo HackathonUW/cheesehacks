@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ComposableMap, ZoomableGroup, Geographies, Geography } from "react-simple-maps";
 import { scaleQuantize } from "d3-scale";
+import { useAuth0 } from "@auth0/auth0-react";
 
 import EventMarker from './../EventMarker/EventMarker';
 
@@ -45,14 +46,24 @@ const colorScale4 = scaleQuantize()
     .range(['#bbbbbb', '#b6b3ad', '#b2aca0', '#ada592', '#a79d85', '#a29678', '#9d8f6b', '#97885e', '#918151']);
 
 
-const MapChart = ({topic}) => {
+const MapChart = ({topic, setMin, setMax}) => {
+  const { user } = useAuth0();
   const [mapData, setMapData] = useState([]);
   const [eventData, setEventData] = useState([]);
+  const [attendingEvents, setAttendingEvents] = useState([]);
 
   useEffect(() => {
     console.log("REFETCH");
     fetchMapData();
   }, [topic]);
+
+  useEffect(() => {
+    getAttendingEvents();
+  }, [mapData]);
+
+  useEffect(() => {
+    getEventData();
+  }, [attendingEvents]);
 
   useEffect(() => {
     console.log("RESCALE");
@@ -70,6 +81,9 @@ const MapChart = ({topic}) => {
     }
     var min = Math.min.apply(0, values),
         max = Math.max.apply(100, values);
+
+    setMin(min);
+    setMax(max);
 
     colorScale.domain([min, max])
     colorScale2.domain([min, max])
@@ -105,15 +119,42 @@ const MapChart = ({topic}) => {
       .then(data => {
         setMapData(data);
       })
-      .then(() => {
-        fetchEventData();
-      })
       .catch(error => {
         console.error(error);
       });
   }
 
-  function fetchEventData() {
+  function getAttendingEvents() {
+    const options = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+        email: user.email
+      })
+		};
+
+    console.log(options);
+    fetch("https://cheesehack-backend.herokuapp.com/attended", options)
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      if (!data) {
+        throw Error("Null data");
+      }
+      data.forEach(event => {
+        event.startDate = event.dates.split(',')[0];
+        event.endDate = event.dates.split(',')[1];
+      });
+      setAttendingEvents(data);
+    })
+    .catch(err => {
+      console.error(err);
+    });
+  }
+
+  function getEventData() {
     const options = {
       method: 'POST',
       headers: {
@@ -131,6 +172,7 @@ const MapChart = ({topic}) => {
           event.coordinates = [event.coordinates[1], event.coordinates[0]];
           event.startDate = event.dates.split(',')[0];
           event.endDate = event.dates.split(',')[1];
+          event.attending = attendingEvents.find(e => e.pid === event.pid) != null;
           // event.startDate = moment(event.dates.split(',')[0], 'YYYY-MM-DD HH:mm:ss').toDate();
           // event.endDate = moment(event.dates.split(',')[1], 'YYYY-MM-DD HH:mm:ss').toDate();
         });

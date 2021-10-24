@@ -11,22 +11,13 @@ function Profile() {
 	const { user } = useAuth0();
 
   const [fetching, setFetching] = useState(false);
-  const [eventIds, setEventIds] = useState([]);
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    getAttendedIds();
+    getAttendingEvents();
   }, []);
 
-  useEffect(() => {
-    getAttendingEvents();
-  }, [eventIds]);
-
-  useEffect(() => {
-    console.log(events);
-  }, [events]);
-
-  function getAttendedIds() {
+  function getAttendingEvents() {
     const options = {
 			method: 'POST',
 			headers: {
@@ -40,36 +31,6 @@ function Profile() {
     console.log(options);
     setFetching(true);
     fetch("https://cheesehack-backend.herokuapp.com/attended", options)
-    .then(response => response.json())
-    .then(res => {
-      console.log(res);
-      if (!res) {
-        throw Error("Null res");
-      }
-      var ids = res.map(res => res.pid);
-      setEventIds(ids);
-    })
-    .catch(err => {
-      console.error(err);
-    });
-    
-  }
-
-  function getAttendingEvents() {
-    const options = {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-        action: "ids",
-        id: eventIds
-      })
-		};
-
-    console.log(options);
-    setFetching(true);
-    fetch("https://cheesehack-backend.herokuapp.com/events", options)
     .then(response => response.json())
     .then(data => {
       console.log(data);
