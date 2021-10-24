@@ -40,6 +40,7 @@ const MapChart = () => {
     }
 
     fetch("https://cheesehack-backend.herokuapp.com/wicovid", options)
+      .then(response => response.json())
       .then(data => {
         setData(data);
       })
