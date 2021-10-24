@@ -1,6 +1,6 @@
 import { Marker } from "react-simple-maps";
 import ReactTooltip from "react-tooltip";
-import { Box, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, useDisclosure, Link } from '@chakra-ui/react';
+import { useToast, Box, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Button, useDisclosure, Link } from '@chakra-ui/react';
 import { useAuth0 } from "@auth0/auth0-react";
 
 import { FaMapMarkerAlt } from 'react-icons/fa';
@@ -8,8 +8,24 @@ import { FaMapMarkerAlt } from 'react-icons/fa';
 import './EventMarker.js';
 
 function EventMarker({event}) {
+  const toast = useToast();
   const { user } = useAuth0();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [fetchingStatus, setFetchingStatus] = useState();
+
+  function getJoinedEvent() {
+    const options = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+        action: "attended",
+        pid: event.pid,
+        email: user.email
+      })
+		};
+  }
 
   function handleJoinEvent() {
     const options = {
@@ -28,7 +44,23 @@ function EventMarker({event}) {
     fetch("https://cheesehack-backend.herokuapp.com/users", options)
       .then(response => response.json())
       .then(res => {
-        console.log("JOIN EVENT", !res.error)
+        if (!res.error) {
+          toast({
+            title: "Joined Event!",
+            description: "You have joined " + event.name + "!",
+            status: "success",
+            duration: 2500,
+            isClosable: true,
+          })
+        } else {
+          toast({
+            title: "Oops!",
+            description: "You've already joined this event",
+            status: "fail",
+            duration: 2500,
+            isClosable: true,
+          }) 
+        }
       })
       .catch(err => {
         console.error(err);
@@ -70,7 +102,8 @@ function EventMarker({event}) {
           </ModalBody>
 
           <ModalFooter>
-            <Button onClick={() => handleJoinEvent()} colorScheme="blue">Join Event!</Button>
+            <Button onClick={() => {
+              handleJoinEvent(toast)}} colorScheme="blue">Join Event!</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
