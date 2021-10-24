@@ -1,4 +1,4 @@
-import { Box, Button } from '@chakra-ui/react';
+import { Box, Button, Select } from '@chakra-ui/react';
 import ReactTooltip from "react-tooltip";
 import { useHistory } from 'react-router-dom';
 import addEvent from '../../images/addEvent.png'
@@ -19,13 +19,18 @@ function Map() {
 
   return (
     <div className="Map">
+      <Select placeholder="Select data to view">
+        <option value="option1">Option 1</option>
+        <option value="option2">Option 2</option>
+        <option value="option3">Option 3</option>
+      </Select>
       <MapChart />
-      <ReactTooltip id="EventMarker" place="top" effect="solid"/>
-        <circle r="10vh" className=" addEvent addEventCircle" onClick={addEvent}>
-          <div className="addIcon">
-            <AddIcon />
-          </div>
-        </circle>
+      <circle r="10vh" className=" addEvent addEventCircle" onClick={addEvent} data-tip="Create Event" data-for="registerTip">
+        <div className="addIcon">
+          <AddIcon />
+        </div>
+      </circle>
+      <ReactTooltip id="registerTip" place="top" effect="solid"/>
     </div>
   );
 }
