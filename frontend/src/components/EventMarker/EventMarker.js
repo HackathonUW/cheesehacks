@@ -85,6 +85,8 @@ function EventMarker({event}) {
           }) 
         }
         setAttending(false);
+        changeParticipants(-1);
+        setParticipants(participants - 1);
       })
       .catch(err => {
         console.error(err);
@@ -118,7 +120,7 @@ function EventMarker({event}) {
       });
   }
 
-  function incrementParticipants() {
+  function changeParticipants(num) {
     const options = {
 			method: 'POST',
 			headers: {
@@ -126,7 +128,8 @@ function EventMarker({event}) {
 			},
 			body: JSON.stringify({
         action: "increment",
-        pid: event.pid
+        num: num,
+        id: event.pid
       })
 		};
 
@@ -176,7 +179,7 @@ function EventMarker({event}) {
           }) 
         }
         setAttending(true);
-        incrementParticipants();
+        changeParticipants(1);
         setParticipants(participants + 1);
       })
       .catch(err => {
