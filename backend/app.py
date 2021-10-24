@@ -60,13 +60,13 @@ def users():
     if(request.json.get('action', None) == 'add'):
         try:
             db.session.add(Users(name=request.json["name"],address=request.json["address"],
-            zip_code = request.json["zip_code"], description=request.json["description"], dates=request.json["dates"], type=request.json["type"]))
+            zip_code = request.json["zip_code"], description=request.json["description"], dates=request.json["dates"], type=UserType[request.json["type"]]))
         except Exception as e:
             print(e)
             return jsonify({"error": True})
         return jsonify({"error" : False})
     if(request.json.get('action') == 'search'):
-        return jsonify(i.as_dict for i in Events.query.all())
+        return jsonify([i.as_dict() for i in Users.query.all()])
 
     return jsonify({"error" : True})
 @app.route('/events', methods=['POST'])
