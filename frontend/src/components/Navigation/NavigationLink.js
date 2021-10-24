@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Box, useColorModeValue } from '@chakra-ui/react';
 
-function NavigationLink({ to, label }) {
+function NavigationLink({to, label}) {
     return (
       <Box
       px={2}

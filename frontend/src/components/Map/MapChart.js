@@ -39,7 +39,7 @@ const colorScale2 = scaleQuantize()
 ]);
 
 const colorScale3 = scaleQuantize()
-    .range([['#eeeeee', '#ebe7e1', '#e8dfd5', '#e5d8c9', '#e1d1bc', '#dec9b0', '#dac2a4', '#d6bb98', '#d2b48c']]);
+    .range(['#eeeeee', '#ebe7e1', '#e8dfd5', '#e5d8c9', '#e1d1bc', '#dec9b0', '#dac2a4', '#d6bb98', '#d2b48c']);
 
 const colorScale4 = scaleQuantize()
     .range(['#bbbbbb', '#b6b3ad', '#b2aca0', '#ada592', '#a79d85', '#a29678', '#9d8f6b', '#97885e', '#918151']);

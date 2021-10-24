@@ -56,7 +56,7 @@ function Events() {
 			address: address,
 			zip_code: zip,
 			dates: {dateTime, fdateTime},
-      topic: topic,
+      title: topic,
 		};
 
 		const options = {
