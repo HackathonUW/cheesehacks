@@ -3,7 +3,7 @@ import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import { scaleQuantize } from "d3-scale";
 import { csv } from "d3-fetch";
 
-const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json";
+const geoUrl = "https://raw.githubusercontent.com/deldersveld/topojson/master/countries/us-states/WI-55-wisconsin-counties.json";
 
 const colorScale = scaleQuantize()
   .domain([1, 10])
@@ -24,13 +24,23 @@ const MapChart = () => {
 
   useEffect(() => {
     // https://www.bls.gov/lau/
-    csv("/unemployment-by-county-2017.csv").then(counties => {
-      setData(counties);
-    });
+    // csv("https://www.bls.gov/lau/unemployment-by-county-2017.csv").then(counties => {
+    //   console.log(counties);
+    //   setData(counties);
+    // });
   }, []);
 
   return (
-      <ComposableMap projection="geoAlbersUsa" style={{height: '100%'}}>
+      <ComposableMap 
+          projection="geoAlbersUsa" 
+          projectionConfig={{
+            yOffset: 1000,
+            xOffset: 100000,
+            rotate: [0, 0, 0],
+            scale: 2000
+          }}
+          style={{height: '100%'}}
+      >
         <Geographies geography={geoUrl}>
           {({ geographies }) =>
             geographies.map(geo => {
