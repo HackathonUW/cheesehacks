@@ -30,7 +30,7 @@ const Links = [
   {name: 'Map', route: '/dashboard/'},
   {name: 'Calendar', route: '/dashboard/calendar'},
   {name: 'Create Event', route: '/dashboard/volunteerevents'},
-  {name: 'My Profile', route: '/dashboard/profile'}
+  {name: 'My Profile', route: '/dashboard/profile/'}
 ];
 
 function Navigation({children}) {
@@ -71,8 +71,8 @@ function Navigation({children}) {
               spacing={4}
               display={{ base: 'none', md: 'flex' }}>
               {Links.map((link) => (
-                <Link to={link.route}>
-                  <NavigationLink key={link.name}>
+                <Link to={link.route} key={link.name}>
+                  <NavigationLink>
                     {link.name}
                   </NavigationLink>
                 </Link>
@@ -103,7 +103,7 @@ function Navigation({children}) {
                 </HStack>
               </MenuButton>
               <MenuList>
-                <MenuItem>My Profile</MenuItem>
+                <Link to={'/dashboard/profile'}><MenuItem>My Profile</MenuItem></Link>
                 <MenuDivider />
                 <MenuItem onClick={() => logout({ returnTo: window.location.origin })}>Log out</MenuItem>
               </MenuList>
