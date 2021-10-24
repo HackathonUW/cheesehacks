@@ -3,6 +3,8 @@ import { FormControl, FormLabel, Box, Heading, Button, Input, Textarea, InputGro
 import events from "../Calendar/events";
 import { useAuth0 } from "@auth0/auth0-react";
 
+import './VolunteerEvents.css'
+
 function Events() {
 	const [name, setName] = useState();
 	const [desc, setDesc] = useState();
@@ -11,30 +13,49 @@ function Events() {
 	const [dateTime, setDateTime] = useState();
 	const [fdateTime, setFDateTime] = useState();
 	const { user } = useAuth0();
-	let count = 103;
+
+  const [length, setLength] = useState();
+
 	//Number of events API
 
-	const createEvent = useCallback((name,address,zip,desc, dateTime, fdateTime, email) => {
-		console.log(dateTime);
-		const lengthOptions = {
+  function handleCreateEvent() {
+    getEventLength()
+    .then(() => {
+      postEvent();
+    })
+  }
+
+  function getEventLength() {
+    const options = {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({action: "length"})
 		}
-		let id;
-		fetch("https://cheesehack-backend.herokuapp.com/events",lengthOptions).then(response => response.json()).then(data => id = data).then(console.log(id))
-		var info = {
+		return fetch("https://cheesehack-backend.herokuapp.com/events", options)
+      .then(response => response.json())
+      .then(data => {
+        console.log("LENGTH:", data.length);
+        setLength(data.length);
+      })
+      .catch(error => {
+        console.log(error);
+      })
+  }
+
+  function postEvent() {
+    var info = {
 			action: "add",
-			id: count++,
+			id: length + 1,
 			eventname: name,
-			email: email,
+			email: user.email,
 			description: desc,
 			address: address,
 			zip_code: zip,
 			dates: {dateTime, fdateTime},
 		};
+
 		const options = {
 			method: 'POST',
 			headers: {
@@ -42,21 +63,22 @@ function Events() {
 			},
 			body: JSON.stringify(info)
 		}
-		console.log(JSON.stringify(info))
-		fetch("https://cheesehack-backend.herokuapp.com/events",options).then(response => console.log(response.json()))
-		.catch(error => console.error('Error: ', error));
-	},[])
 
-	const handleCreateEvent = useCallback(() => {
-		createEvent(name, address, zip, desc, dateTime, fdateTime, user.email);
-	},[name, address, zip, desc,createEvent, user.email, dateTime, fdateTime])
+		console.log(JSON.stringify(info))
+		fetch("https://cheesehack-backend.herokuapp.com/events", options)
+      .then(response => response.json())
+      .then(res => {
+        console.log("EVENT CREATED:", res.error);
+      })
+		  .catch(error => console.error('Error: ', error));
+  }
 
 	return (
-		<div className="events">
-			<Box textAlign="center">
+		<div className="Events">
+			<div>
 				<Heading>Create Event</Heading>
-			</Box>
-			<Box my={4} textAlign="left" width={500} ml={500}>
+			</div>
+			<Box my={4} width={500}>
 			<FormControl my={5} isReadOnly>
 				<FormLabel>
 					Organization Name
@@ -101,7 +123,7 @@ function Events() {
 				<Textarea onChange={event => setDesc(event.currentTarget.value)} />
 			</FormControl>
 			</Box>
-			<Button width={500} ml={500} mb={5} mt={4} type="submit" onClick={handleCreateEvent}>
+			<Button width={500} mb={5} mt={4} type="submit" onClick={handleCreateEvent}>
 				Submit
 			</Button>
 		</div>

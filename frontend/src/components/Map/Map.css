@@ -9,20 +9,21 @@
   right: 0;
   bottom: 0;
   margin: 30px;
-  background-color: #5092c8;
-  transition: background 0.25s;
   width: 8vh;
   height: 8vh;
   border-radius: 50%;
-  display: grid;
-  place-items: center;
 
-  
 }
 
-.addEvent:hover {
+.addEventCircle {
+  display: grid;
+  place-items: center;
+  background-color: #5092c8;
+  transition: background 0.25s;
+}
+
+.addEventCircle:hover {
   background-color: #367ab3;
-  
 }
 
 .addIcon {
