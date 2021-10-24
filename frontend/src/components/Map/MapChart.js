@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ComposableMap, ZoomableGroup, Geographies, Geography } from "react-simple-maps";
 import { scaleQuantize } from "d3-scale";
-import { Spring, config } from "react-spring";
+import { useSpring } from "react-spring";
 
 /**
  * Centering on markers: https://github.com/zcreativelabs/react-simple-maps/issues/62
@@ -40,6 +40,7 @@ const MapChart = () => {
     }
 
     fetch("https://cheesehack-backend.herokuapp.com/wicovid", options)
+      .then(response => response.json())
       .then(data => {
         setData(data);
       })
@@ -54,11 +55,6 @@ const MapChart = () => {
   }
 
   return (
-    <Spring
-      from={{ center: 1 }}
-      to={{ center: center }}
-      config={config.slow}
-    >
       <ComposableMap 
           projection="geoConicConformal" 
           projectionConfig={{
@@ -105,7 +101,6 @@ const MapChart = () => {
           </Geographies>
         </ZoomableGroup>
       </ComposableMap>
-    </Spring>
   );
 };
 
