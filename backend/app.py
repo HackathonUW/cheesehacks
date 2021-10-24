@@ -88,7 +88,7 @@ def users():
             i=i.as_dict()
             i["type"] = i["type"].name
             lists.append(i)
-        return jsonify(i)
+        return jsonify(lists)
     if(request.json.get('action') == 'attended'):
         if(not Attended.query.filter(Attended.pid==request.json['pid'], Attended.email==request.json['email']).count()):
             db.session.add(Attended(pid=request.json['pid'], email=request.json['email']))
@@ -97,7 +97,7 @@ def users():
         else:
             return jsonify({"error":True})
     if(request.json.get('action') == 'list'):
-        return jsonify([i.as_dict() for i in db.session.query(Attended,Events).filter(Attended.email==request.json['email'],Attended.pid==Events.pid)])
+        return jsonify([i[0].as_dict()|i[1].as_dict() for i in db.session.query(Attended,Events).filter(Attended.email==request.json['email'],Attended.pid==Events.pid).all()])
 
     return jsonify({"error" : True})
 @app.route('/events', methods=['POST'])
@@ -130,6 +130,10 @@ def events():
         return jsonify({"error" : False})
     if(request.json.get('action') == "length"):
         return jsonify({ "error" : False,"length": Events.query.count()})
+    if(request.json.get('action') == "delete"):
+        db.session.query(Events).filter(Events.pid==request.json["pid"]).delete()
+        db.session.commit()
+        return jsonify({"error": False})
     return jsonify({"error": True})
 
 @app.route('/')
@@ -143,8 +147,6 @@ if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
     # CODE to fill DB
     
-
-
     app.run()
 
     '''
