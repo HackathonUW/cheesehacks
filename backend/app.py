@@ -90,9 +90,12 @@ def users():
             lists.append(i)
         return jsonify(i)
     if(request.json.get('action') == 'attended'):
-        db.session.add(Attended(pid=request.json['pid'], email=request.json['email']))
-        db.session.commit()
-        return jsonify({"error" : False})
+        if(not Attended.query.filter(Attended.pid==request.json['pid'], Attended.email==request.json['email']).count()):
+            db.session.add(Attended(pid=request.json['pid'], email=request.json['email']))
+            db.session.commit()
+            return jsonify({"error" : False})
+        else:
+            return jsonify({"error":True})
     if(request.json.get('action') == 'list'):
         return jsonify([i.as_dict() for i in db.session.query(Attended,Events).filter(Attended.email==request.json['email'],Attended.pid==Events.pid)])
 
@@ -140,6 +143,8 @@ if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
     # CODE to fill DB
     
+
+
     app.run()
 
     '''
