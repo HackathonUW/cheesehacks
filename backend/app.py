@@ -41,15 +41,17 @@ class Users(db.Model):
     type = db.Column(db.Enum(UserType), nullable=False)
     def as_dict(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 class Events(db.Model):
     pid = db.Column(db.Integer, nullable= False, primary_key=True)
     email = db.Column(db.String(255), nullable= False)
     description = db.Column(db.Text(), nullable = True)
-    dates = db.Column(db.DATETIME(), nullable = False)
+    dates = db.Column(db.String(255), nullable = False)
     address  = db.Column(db.String(255), nullable=False)
     zip_code = db.Column(db.Integer, nullable = False)
     coordinates = db.Column(Point, nullable=False)
     num_attend = db.Column(db.Integer, nullable= False)
+    evname = db.Column(db.String(255),nullable=False)
     def as_dict(self):
        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
@@ -75,7 +77,8 @@ def events():
             location = geolocator.geocode(request.json["address"] + " " + str(request.json["zip_code"]))
             db.session.add(Events(pid = request.json["id"],email=request.json["email"],address=request.json["address"],
             zip_code = request.json["zip_code"], description=request.json["description"], dates=request.json["dates"]
-            , coordinates = 'POINT('+str(location.latitude) + " " + str(location.longitude) + ')', num_attend=0))
+            , coordinates = 'POINT('+str(location.latitude) + " " + str(location.longitude) + ')', num_attend=0, 
+            evname=request.json["eventname"]))
             db.session.commit()
         except Exception as e:
             print(e)
@@ -102,9 +105,9 @@ def wicovid():
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
     # CODE to fill DB
-    db.create_all()
     app.run()
     '''
+    with engine.connect() as con:
         with open("data/covid.csv") as f:
             headers = next(f)
             for i in f:
