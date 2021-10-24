@@ -7,6 +7,8 @@ import { csv } from "d3-fetch";
  * Centering on markers: https://github.com/zcreativelabs/react-simple-maps/issues/62
  */
 const geoUrl = "https://raw.githubusercontent.com/deldersveld/topojson/master/countries/us-states/WI-55-wisconsin-counties.json";
+// const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/counties-10m.json";
+
 
 const colorScale = scaleQuantize()
   .domain([1, 10])
@@ -28,11 +30,21 @@ const MapChart = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    // https://www.bls.gov/lau/
-    // csv("https://www.bls.gov/lau/unemployment-by-county-2017.csv").then(counties => {
-    //   console.log(counties);
-    //   setData(counties);
-    // });
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: ""
+    }
+
+    fetch("https://cheesehack-backend.herokuapp.com/wicovid", options)
+      .then(data => {
+        setData(data);
+      })
+      .catch(error => {
+        console.error(error);
+      });
   }, []);
 
   return (
@@ -50,22 +62,25 @@ const MapChart = () => {
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
               geographies.map(geo => {
+                console.log(geo);
                 const cur = data.find(s => s.id === geo.id);
                 return (
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
-                    // fill={colorScale(cur ? cur.unemployment_rate : "#EEE")}
+                    fill={colorScale(cur ? cur.unemployment_rate : "#EEE")}
                     style={{
                       default: {
                         fill: '#eeeeee',
                       },
-                      // hover: {
-                      //   outline: "none"
-                      // },
-                      // pressed: {
-                      //   outline: "none"
-                      // }
+                      hover: {
+                        fill: '#bbbbbb',
+                        outline: "none"
+                      },
+                      pressed: {
+                        fill: 'none',
+                        outline: "none"
+                      }
                     }}
                   />
                 );
