@@ -40,18 +40,14 @@ const colorScale2 = scaleQuantize()
 
 
 const MapChart = () => {
-  const [zoom, setZoom] = useState(1);
   const [mapData, setMapData] = useState([]);
   const [eventData, setEventData] = useState([]);
 
   useEffect(() => {
-    alert("Fetching data...");
     fetchMapData();
-    fetchEventData();
   }, []);
 
   useEffect(() => {
-    // console.log("DATA" + mapData);
     var values = mapData.map(data => data.Cases_per_100);
     var min = Math.min.apply(0, values),
         max = Math.max.apply(100, values);
@@ -73,6 +69,9 @@ const MapChart = () => {
       .then(data => {
         setMapData(data);
       })
+      .then(() => {
+        fetchEventData();
+      })
       .catch(error => {
         console.error(error);
       });
@@ -93,7 +92,8 @@ const MapChart = () => {
         data.forEach(event => {
           event.coordinates = event.coordinates.split('(')[1].split(')')[0].split(' ').map(Number);
           event.coordinates = [event.coordinates[1], event.coordinates[0]];
-          console.log(event.dates.split(','));   
+          // TODO: Add Date times
+          // console.log(event.dates.split(','));   
           // event.startDate = moment(event.dates.split(',')[0], 'YYYY-MM-DD HH:mm:ss').toDate();
           // event.endDate = moment(event.dates.split(',')[1], 'YYYY-MM-DD HH:mm:ss').toDate();
         });
@@ -116,27 +116,24 @@ const MapChart = () => {
           style={{height: '100%'}}
       >
         <ZoomableGroup 
-            center={[-89.84427405362867, 44.68479592051389]} 
-            zoom={zoom}
+            center={[-89.84427405362867, 44.68479592051389]}
             maxZoom={1}>
           <Geographies geography={geoUrl}>
             {({ geographies }) =>
               geographies.map(geo => {
                 const cur = mapData.find(s => s.county === geo.properties.NAME);
-                // console.log(geo.properties.NAME);
-                // console.log(cur);
                 return (
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
                     style={{
                       default: {
-                        fill: colorScale(cur ? cur.Cases_per_100 : "#EEE"),
+                        fill: cur ? colorScale(cur.Cases_per_100) : '#eeeeee',
                         outline: "none",
                         stroke: '#dddddd',
                       },
                       hover: {
-                        fill: colorScale2(cur ? cur.Cases_per_100 : "#EEE"),
+                        fill: cur ? colorScale2(cur.Cases_per_100) : '#eeeeee',
                         outline: "none"
                       },
                       pressed: {
