@@ -20,13 +20,13 @@ function Events() {
 				<Heading>Create Event</Heading>
 			</Box>
 			<Box my={4} textAlign="left" width={500} ml={500}>
-			<FormControl isReadOnly>
+			<FormControl my={5} isReadOnly>
 				<FormLabel>
 					Organization Name
 				</FormLabel>
 				<Input defaultValue={user.name} />	
 			</FormControl>
-			<FormControl>
+			<FormControl my={5}>
 				<FormLabel>
 					Email
 				</FormLabel>
