@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { ComposableMap, ZoomableGroup, Geographies, Geography, Marker } from "react-simple-maps";
+import { ComposableMap, ZoomableGroup, Geographies, Geography } from "react-simple-maps";
 import { scaleQuantize } from "d3-scale";
 
-import blueEvent from '../../images/blueEvent.png';
+import EventMarker from './../EventMarker/EventMarker';
 
 /**
  * Centering on markers: https://github.com/zcreativelabs/react-simple-maps/issues/62
@@ -144,30 +144,9 @@ const MapChart = () => {
               })
             }
           </Geographies>
-          <Marker coordinates={[-89.492556, 43.090266]}>
-          <g
-            fill="none"
-            stroke="#FF5533"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            transform="translate(-12, -24)"
-          >
-            <circle cx="12" cy="10" r="3" />
-            <path d="M12 21.7C17.3 17 20 13 20 10a8 8 0 1 0-16 0c0 3 2.7 6.9 8 11.7z" />
-          </g>
-          </Marker>
-          {eventData.map(event => {
-            console.log(event);
-            return (
-            <Marker key={event.pid} coordinates={event.coordinates}>
-              <img
-                src={blueEvent}
-                className="d-inline-block align-top"
-                alt='blue event'
-              />
-            </Marker> );
-          })}
+          {eventData.map(event => (
+            <EventMarker key={event.pid} event={event} />
+          ))}
         </ZoomableGroup>
       </ComposableMap>
   );
