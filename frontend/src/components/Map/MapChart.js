@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { ComposableMap, Geographies, Geography } from "react-simple-maps";
+import { ComposableMap, ZoomableGroup, Geographies, Geography } from "react-simple-maps";
 import { scaleQuantize } from "d3-scale";
 import { csv } from "d3-fetch";
 
+/**
+ * Centering on markers: https://github.com/zcreativelabs/react-simple-maps/issues/62
+ */
 const geoUrl = "https://raw.githubusercontent.com/deldersveld/topojson/master/countries/us-states/WI-55-wisconsin-counties.json";
 
 const colorScale = scaleQuantize()
@@ -20,6 +23,8 @@ const colorScale = scaleQuantize()
   ]);
 
 const MapChart = () => {
+  const [center, setCenter] = useState([0, 0]);
+  const [zoom, setZoom] = useState(1);
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -32,29 +37,42 @@ const MapChart = () => {
 
   return (
       <ComposableMap 
-          projection="geoAlbersUsa" 
+          projection="geoConicConformal" 
           projectionConfig={{
-            yOffset: 1000,
-            xOffset: 100000,
-            rotate: [0, 0, 0],
-            scale: 2000
+            rotate: [90,-45.16667, 0],
+            parallels: [46.76667,45.56667],
+            bounds: [[-0.046794,-0.044049],[0.052058,0.063177]],
+            scale: 5000
           }}
           style={{height: '100%'}}
       >
-        <Geographies geography={geoUrl}>
-          {({ geographies }) =>
-            geographies.map(geo => {
-              const cur = data.find(s => s.id === geo.id);
-              return (
-                <Geography
-                  key={geo.rsmKey}
-                  geography={geo}
-                  fill={colorScale(cur ? cur.unemployment_rate : "#EEE")}
-                />
-              );
-            })
-          }
-        </Geographies>
+        {/* <ZoomableGroup center={center} zoom={zoom}> */}
+          <Geographies geography={geoUrl}>
+            {({ geographies }) =>
+              geographies.map(geo => {
+                const cur = data.find(s => s.id === geo.id);
+                return (
+                  <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    // fill={colorScale(cur ? cur.unemployment_rate : "#EEE")}
+                    style={{
+                      default: {
+                        fill: '#eeeeee',
+                      },
+                      // hover: {
+                      //   outline: "none"
+                      // },
+                      // pressed: {
+                      //   outline: "none"
+                      // }
+                    }}
+                  />
+                );
+              })
+            }
+          </Geographies>
+        {/* </ZoomableGroup> */}
       </ComposableMap>
   );
 };
