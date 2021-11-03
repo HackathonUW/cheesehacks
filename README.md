@@ -1,4 +1,4 @@
-# AΞЯIS
+# AΞЯIS (Cheesehacks 2021)
 
 ### A simple manager for both organizers and volunteers
 
