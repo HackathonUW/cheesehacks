@@ -1,5 +1,7 @@
 # AΞЯIS
 
+### A simple manager for both organizers and volunteers
+
 **Geoffrey Xue, Aiden Cohen, Akshay Joshi, Kitiara Moore**
 
 ### View demo: [https://cheesehack.herokuapp.com](https://cheesehack.herokuapp.com)
